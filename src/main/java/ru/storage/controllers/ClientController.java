@@ -191,7 +191,7 @@ public class ClientController {
     public String getAllPersons(Model model) {
         model.addAttribute("content", "client");
         model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
-        model.addAttribute("client", new Client());
+        model.addAttribute("Object", new Client());
         return "index";
         //return "redirect:/client/list";
     }
@@ -199,15 +199,16 @@ public class ClientController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/client/fragments/client_edit_modal")
     public String getClientEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("client", clientRepository.findById(id).get());
-        model.addAttribute("client", new Client());
+        model.addAttribute("Object", clientRepository.findById(id).get());
+        model.addAttribute("saveUrl", "/client/save");
+        //model.addAttribute("client", new Client());
         return "client_edit_modal :: content_modal_form";
     }
 
     // Сохранение клиента
     @PostMapping("/client/save")
-    public String saveClient(@ModelAttribute Client box) {
-        clientRepository.save(box);
+    public String saveClient(@ModelAttribute Client client) {
+        clientRepository.save(client);
         return "redirect:/client";
     }
 
@@ -224,8 +225,17 @@ public class ClientController {
     public String listEmployees(Model model) {
         model.addAttribute("content", "employee");
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("employee", new Employee());
+        model.addAttribute("Object", new Employee());
         return "index";
+    }
+
+    // форма изменения/добавления данных о боксе
+    @GetMapping("/employee/fragments/client_edit_modal")
+    public String getEmployeetEditModal(Model model, @RequestParam Long id) {
+        model.addAttribute("Object", employeeRepository.findById(id).get());
+        model.addAttribute("saveUrl", "/employee/save");
+        //model.addAttribute("client", new Client());
+        return "client_edit_modal :: content_modal_form";
     }
 
     // сохранение сотрудника
@@ -239,7 +249,18 @@ public class ClientController {
     @GetMapping("/employee/delete")
     public String deleteEmployee(@RequestParam Long id) {
         employeeRepository.deleteById(id);
-        return "redirect:/employee"; //list?openTab=employee";
+        return "redirect:/employee";
+    }
+
+    // Сохранение клиента
+    @PostMapping("/person/save")
+    public String savePerson(@ModelAttribute Person person) {
+        if (person instanceof Client) {
+            clientRepository.save((Client) person);
+        } else if (person instanceof Employee) {
+            employeeRepository.save((Employee) person);
+        }
+        return "redirect:/client";
     }
 
 

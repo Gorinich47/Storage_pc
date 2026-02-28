@@ -9,7 +9,7 @@
         <!-- Кнопка открытия формы добавления -->
         <button class="btn btn-primary mb-3" data-bs-target="#addPriceModal"
                 data-bs-toggle="modal"
-                onclick="clearForm_price()"
+                onclick="clearForm()"
                 type="button">
             Добавить новый тариф
         </button>
@@ -50,8 +50,11 @@
                     <!-- Кнопка Удалить -->
                     <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
                             data-bs-toggle="modal"
-                            onclick="setDeleteId_price(this)"
-                            th:attr="data-id=${curPrice.id}, data-box-name=${curPrice.box.idBox}"
+                            onclick="setDeleteId(this)"
+                            th:attr="data-id=${curPrice.id},
+                                    data-object-from-url-delete='price',
+                                    data-form-question-object='тариф для Бокса № ',
+                                    data-form-question-name=${curPrice.box.idBox}"
                             type="button">
                         Удалить
                     </button>
@@ -101,7 +104,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm_price()"
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm()"
                                     type="button">Отмена
                             </button>
                             <button class="btn btn-primary" type="submit">Сохранить</button>
@@ -120,7 +123,7 @@
                         <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                     </div>
                     <div class="modal-body">
-                        Вы действительно хотите удалить тариф для бокса <strong id="deleteObjectName"></strong>?
+                        <a id="textFormQuestion"></a> <strong id="objectNameFormQuestion"></strong>?
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>

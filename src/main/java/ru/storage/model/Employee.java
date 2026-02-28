@@ -21,4 +21,11 @@ public class Employee extends Person {
     private Date dateStart;
     private Date dateEnd;
     private Boolean isFullTime;
+
+    //    public Employee(){
+//        super();
+//    }
+    public Employee(String firstName, String lastName, java.util.Date birthDate, String phoneNumber, String emailAddress, String address, PostEmployee postEmployee, Date dateStart, Date dateEnd, Boolean isFullTime) {
+        super();
+    }
 }

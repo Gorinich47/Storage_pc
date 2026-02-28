@@ -1,93 +1,132 @@
 <div th:fragment="content_modal_form" xmlns:th="http://www.thymeleaf.org">
 
-    <form method="post" th:action="@{/client/save}" th:object="${client}">
-        <input id="clientId" th:field="*{id}" type="hidden"/>
+    <form id="edit_modal_form"
+          method="post"
+          th:action="@{${saveUrl}}"
+          th:object="${Object}">
 
-        <div class="mb-3">
-            <label class="form-label" for="lastName">Фамилия:</label>
-            <input class="form-control"
-                   id="lastName"
-                   placeholder="Введите фамилию"
-                   th:field="*{lastName}"
-                   type="text"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('lastName')}">
-                <small th:errors="*{lastName}"></small>
-            </div>
+        <input id="objectId" th:field="*{id}" type="hidden"/>
+
+        <div class="modal-header">
+            <h5 class="modal-title" id="personModalLabel">Добавить клиента</h5>
+            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="firstName">Имя:</label>
-            <input class="form-control"
-                   id="firstName"
-                   placeholder="Введите имя"
-                   th:field="*{firstName}"
-                   type="text"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('firstName')}">
-                <small th:errors="*{firstName}"></small>
-            </div>
-        </div>
+        <div class="modal-body">
 
-        <div class="mb-3">
-            <label class="form-label" for="birthDate">Дата рождения:</label>
-            <input class="form-control"
-                   id="birthDate"
-                   th:field="*{birthDate}"
-                   type="date"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}">
-                <small th:errors="*{birthDate}"></small>
+            <div class="mb-3">
+                <label class="form-label" for="firstName">Фамилия:</label>
+                <input class="form-control"
+                       id="firstName"
+                       placeholder="Введите фамилию"
+                       th:field="*{firstName}"
+                       type="text"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('firstName')}">
+                    <small th:errors="*{firstName}"></small>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="phoneNumber">Телефон:</label>
-            <input class="form-control"
-                   id="phoneNumber"
-                   placeholder="+7 (999) 999-99-99"
-                   th:field="*{phoneNumber}"
-                   type="tel"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}">
-                <small th:errors="*{phoneNumber}"></small>
+            <div class="mb-3">
+                <label class="form-label" for="lastName">Имя:</label>
+                <input class="form-control"
+                       id="lastName"
+                       placeholder="Введите имя"
+                       th:field="*{lastName}"
+                       type="text"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('lastName')}">
+                    <small th:errors="*{lastName}"></small>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="emailAddress">Email:</label>
-            <input class="form-control"
-                   id="emailAddress"
-                   placeholder="example@example.com"
-                   th:field="*{emailAddress}"
-                   type="email"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('emailAddress')}">
-                <small th:errors="*{emailAddress}"></small>
+            <div class="mb-3">
+                <label class="form-label" for="birthDate">Дата рождения:</label>
+                <input class="form-control"
+                       id="birthDate"
+                       th:field="*{birthDate}"
+                       type="date"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}">
+                    <small th:errors="*{birthDate}"></small>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="address">Адрес:</label>
-            <input class="form-control"
-                   id="address"
-                   placeholder="Введите адрес"
-                   th:field="*{address}"
-                   type="text"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('address')}">
-                <small th:errors="*{address}"></small>
+            <div class="mb-3">
+                <label class="form-label" for="phoneNumber">Телефон:</label>
+                <input class="form-control"
+                       id="phoneNumber"
+                       placeholder="+7 (999) 999-99-99"
+                       th:field="*{phoneNumber}"
+                       type="tel"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}">
+                    <small th:errors="*{phoneNumber}"></small>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="comment">Комментарий:</label>
-            <input class="form-control"
-                   id="comment"
-                   placeholder="Введите комментарий"
-                   th:field="*{comment}"
-                   type="text"/>
-            <div class="text-danger" th:if="${#fields.hasErrors('comment')}">
-                <small th:errors="*{comment}"></small>
+            <div class="mb-3">
+                <label class="form-label" for="emailAddress">Email:</label>
+                <input class="form-control"
+                       id="emailAddress"
+                       placeholder="example@example.com"
+                       th:field="*{emailAddress}"
+                       type="email"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('emailAddress')}">
+                    <small th:errors="*{emailAddress}"></small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="address">Адрес:</label>
+                <input class="form-control"
+                       id="address"
+                       placeholder="Введите адрес"
+                       th:field="*{address}"
+                       type="text"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('address')}">
+                    <small th:errors="*{address}"></small>
+                </div>
+            </div>
+            <div th:if="${Object instanceof T(ru.storage.model.Employee)}">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="postEmployee">Должность:</label>
+                    <select class="form-select" id="postEmployee" th:field="*{postEmployee}">
+                        <option value="">Выберите должность</option>
+                        <option th:each="post : ${T(ru.storage.model.PostEmployee).values()}"
+                                th:text="${post.title}" th:value="${post}">Post
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3 form-check">
+                    <input class="form-check-input" id="isFullTime" th:field="*{isFullTime}"
+                           type="checkbox"/>
+                    <label class="form-check-label" for="isFullTime">Полная занятость</label>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="dateStart">Дата приёма:</label>
+                    <input class="form-control" id="dateStart" required th:field="*{dateStart}"
+                           type="date"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="dateEnd">Дата увольнения:</label>
+                    <input class="form-control" id="dateEnd" th:field="*{dateEnd}" type="date"/>
+                </div>
+            </div>
+            <div th:unless="${Object instanceof T(ru.storage.model.Employee)}">
+                <div class="mb-3">
+                    <label class="form-label" for="comment">Комментарий:</label>
+                    <input class="form-control"
+                           id="comment"
+                           placeholder="Введите комментарий"
+                           th:field="*{comment}"
+                           type="text"/>
+                    <div class="text-danger" th:if="${#fields.hasErrors('comment')}">
+                        <small th:errors="*{comment}"></small>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm_client()" type="button">
+            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm()" type="button">
                 Отмена
             </button>
             <button class="btn btn-primary" type="submit">Сохранить</button>

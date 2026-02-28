@@ -10,7 +10,7 @@
         <button class="btn btn-primary mb-3"
                 data-bs-target="#accountModal"
                 data-bs-toggle="modal"
-                onclick="clearForm_account();"
+                onclick="clearForm();"
                 type="button">
             Добавить счёт
         </button>
@@ -71,9 +71,11 @@
                     <!-- Кнопка Удалить -->
                     <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
                             data-bs-toggle="modal"
-                            onclick="setDeleteId_account(this)"
+                            onclick="setDeleteId(this)"
                             th:attr="data-id=${account.id},
-                                     data-client-name=${account.client.firstName + ' ' + account.client.lastName}"
+                                    data-object-from-url-delete='account',
+                                    data-form-question-object=' счет клиента ',
+                                    data-form-question-name=${account.client.firstName + ' ' + account.client.lastName}"
                             type="button">
                         Удалить
                     </button>
@@ -104,7 +106,7 @@
                     <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div class="modal-body">
-                    Вы действительно хотите удалить счёт клиента <strong id="deleteClientName"></strong>?
+                    <a id="textFormQuestion"></a> <strong id="objectNameFormQuestion"></strong>?
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>

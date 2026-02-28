@@ -16,6 +16,9 @@ import java.util.Date;
 public class Client extends Person {
     private String comment;
 
+    //    public Client(){
+//        super();
+//    }
     public Client(String firstName, String lastName, Date birthDate, String phoneNumber, String emailAddress, String address, String comment) {
         super();
     }

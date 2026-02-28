@@ -25,6 +25,8 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //    public Person(){
+//    }
     public Person(String firstName, String lastName, Date birthDate, String phoneNumber, String emailAddress, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
