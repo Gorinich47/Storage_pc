@@ -1,0 +1,17 @@
+<div th:fragment="content" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <form action="/car/add" method="post">
+
+            <label for="title">Введите название автомобиля</label>
+            <input id="title" name="title" type="text"><br><br>
+
+            <label for="description">Введите описание автомобиля</label><br>
+            <input id="description" name="description" type="text"><br><br>
+
+            <label for="price">Введите стоимость автомобиля</label><br>
+            <input id="price" name="price" type="text"><br><br>
+
+            <input type="submit" value="Сохранить">
+        </form>
+    </div>
+</div>

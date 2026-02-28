@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/templates/CSS/bootstrap_min.css" rel="stylesheet"/>
+    <script src="/templates/JS/bootstrap_min.js"></script>
+</head>
+<body>
+<div th:fragment="content" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="row g-6">
+        <div class="col-1 col-lg-1">
+            <!--            Правый отступ-->
+        </div>
+        <div class="col-md-5 col-lg-8">
+            <h4 class="mb-3">Новый клиент</h4>
+            <form class="needs-validation" novalidate="">
+                <div class="row gy-3"> <!-- горизонтальные интервалы между полями -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="firstName">Фамилия</label>
+                        <input class="form-control" id="firstName" placeholder="" required="" type="text" value="">
+                        <div class="invalid-feedback">
+                            Введите фамилю.
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="lastName">Имя</label>
+                        <input class="form-control" id="lastName" placeholder="" required="" type="text" value="">
+                        <div class="invalid-feedback">
+                            Введите имя.
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="birthDate">Дата рождения</label>
+                        <input class="form-control" id="birthDate" placeholder="" required="" type="date" value="">
+                        <div class="invalid-feedback">
+                            Укажите дату рождения.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="phoneNumber">Номер телефона</label>
+                        <input class="form-control" id="phoneNumber" pattern="^\+7\s9\d{2}-\d{3}-\d{4}$"
+                               placeholder="+7 999-888-7777" required=""
+                               type="text" value="">
+                        <div class="invalid-feedback">
+                            Укажите номер телефона.
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="emailAddress">Email <span
+                                class="text-body-secondary">(Optional)</span></label>
+                        <input class="form-control" id="emailAddress" placeholder="you@example.com" type="email">
+                        <div class="invalid-feedback">
+                            Укажитие email.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="address">Адрес</label>
+                        <input class="form-control" id="address" placeholder="100102, г Москва ул Ленина д 2"
+                               required="" type="text">
+                        <div class="invalid-feedback">
+                            Please enter your shipping address.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="comment">Комментарий</label>
+                        <input class="form-control" id="comment" placeholder="" required="" type="text">
+                        <div class="invalid-feedback">
+                            Укажи комментарии.
+                        </div>
+                    </div>
+                    <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>

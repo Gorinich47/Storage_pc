@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: demo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/Storage
+    username: postgres
+    password: 2133
+    driver-class-name: org.postgresql.Driver

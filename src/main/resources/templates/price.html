@@ -1,0 +1,134 @@
+<div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+
+    <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+
+    <div class="container mt-4">
+        <h2>Список тарифов на боксы</h2>
+
+        <!-- Кнопка открытия формы добавления -->
+        <button class="btn btn-primary mb-3" data-bs-target="#addPriceModal"
+                data-bs-toggle="modal"
+                onclick="clearForm_price()"
+                type="button">
+            Добавить новый тариф
+        </button>
+
+        <!-- Таблица цен -->
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Бокс</th>
+                <th>Цена (₽/мес)</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+                <th>Дата редактирования</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="curPrice : ${prices}">
+                <td th:text="${curPrice.id}"></td>
+                <td th:text="${curPrice.box.idBox}"></td>
+                <td th:text="${curPrice.sumPrice}"></td>
+                <td th:text="${#dates.format(curPrice.dateStart, 'dd.MM.yyyy')}"></td>
+                <td th:text="${#dates.format(curPrice.dateEnd, 'dd.MM.yyyy')}"></td>
+                <td th:text="${@generalService.format(curPrice.dateEdit, false)}"></td>
+                <td>
+                    <button class="btn btn-sm btn-warning" data-bs-target="#addPriceModal"
+                            data-bs-toggle="modal"
+                            onclick="editPrice(this)"
+                            th:attr="data-id=${curPrice.id},
+                                     data-box-id=${curPrice.box.id},
+                                     data-sum_price=${curPrice.sumPrice},
+                                     data-date-start=${#dates.format(curPrice.dateStart, 'yyyy-MM-dd')},
+                                     data-date-end=${#dates.format(curPrice.dateEnd, 'yyyy-MM-dd')}"
+                            type="button">
+                        Редактировать
+                    </button>
+                    <!-- Кнопка Удалить -->
+                    <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                            data-bs-toggle="modal"
+                            onclick="setDeleteId_price(this)"
+                            th:attr="data-id=${curPrice.id}, data-box-name=${curPrice.box.idBox}"
+                            type="button">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Модальное окно для добавления/редактирования тарифа -->
+        <div aria-hidden="true" aria-labelledby="addPriceModalLabel" class="modal fade" id="addPriceModal"
+             tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" th:action="@{/price/save}" th:object="${newPrice}">
+                        <input id="priceId" name="priceId" th:field="*{id}" type="hidden"/>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addPriceModalLabel">Тариф</h5>
+                            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal"
+                                    type="button"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="boxId">Бокс:</label>
+                                <select class="form-select" id="boxId" name="boxId" required th:field="*{box}">
+                                    <option value="">Выберите бокс</option>
+                                    <option th:each="box : ${allboxes}" th:text="${box.idBox}"
+                                            th:value="${box.id}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="sum_price">Цена (₽):</label>
+                                <input class="form-control" id="sum_price" name="sum_price" placeholder="Введите цену"
+                                       required step="0.01" th:field="*{sumPrice}" type="number"/>
+                                <div class="text-danger" th:if="${#fields.hasErrors('sumPrice')}">
+                                    <small th:errors="*{sum_price}"></small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="dateStart">Дата начала действия:</label>
+                                <input class="form-control" id="dateStart" name="dateStart" required
+                                       th:field="*{dateStart}" type="date"/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="dateEnd">Дата окончания действия:</label>
+                                <input class="form-control" id="dateEnd" name="dateEnd" th:field="*{dateEnd}"
+                                       type="date"/>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm_price()"
+                                    type="button">Отмена
+                            </button>
+                            <button class="btn btn-primary" type="submit">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Модальное окно подтверждения удаления -->
+        <div aria-hidden="true" aria-labelledby="deleteConfirmModalLabel" class="modal fade" id="deleteConfirmModal"
+             tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                        <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы действительно хотите удалить тариф для бокса <strong id="deleteObjectName"></strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+                        <a class="btn btn-danger" id="confirmDeleteBtn">Удалить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

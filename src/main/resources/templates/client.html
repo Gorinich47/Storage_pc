@@ -1,0 +1,105 @@
+<div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+
+    <div class="container mt-4">
+        <h2>Список клинетов</h2>
+
+        <!-- Кнопка открытия модальной формы добавления -->
+        <button class="btn btn-primary mb-3"
+                data-bs-target="#clientModal"
+                data-bs-toggle="modal"
+                onclick="clearForm_client();"
+                type="button">
+            Добавить счёт
+        </button>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Дата рождения</th>
+                <th>Телефон</th>
+                <th>Email</th>
+                <th>Адрес</th>
+                <th>Комментарий</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="client : ${clients}">
+                <td th:text="${client.id}">1</td>
+                <td th:text="${client.firstName}">Иван</td>
+                <td th:text="${client.lastName}">Иванов</td>
+                <td th:text="${#dates.format(client.birthDate, 'dd.MM.yyyy')}">01.01.1990</td>
+                <td th:text="${client.phoneNumber}">+7 (999) 123-45-67</td>
+                <td th:text="${client.emailAddress}">ivan@example.com</td>
+                <td th:text="${client.address}">г. Москва, ул. Ленина, д. 1</td>
+                <td th:text="${client.comment}">г. Москва, ул. Ленина, д. 1</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" data-bs-target="#clientModal"
+                            data-bs-toggle="modal"
+                            onclick="editClient(this)"
+                            th:attr="data-id=${client.id},
+                                     data-lastName=${client.lastName},
+                                     data-firstName=${client.firstName},
+                                     data-birthDate=${#dates.format(client.birthDate, 'yyyy-MM-dd')},
+                                     data-phoneNumber=${client.phoneNumber},
+                                     data-emailAddress=${client.emailAddress},
+                                     data-address=${client.address},
+                                     data-comment=${client.comment}"
+                            type="button">
+                        Редактировать
+                    </button>
+                    <!-- Кнопка Удалить -->
+                    <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                            data-bs-toggle="modal"
+                            onclick="setDeleteId_client(this)"
+                            th:attr="data-id=${client.id},
+                                    data-client-name=${client.lastName + ' '+ client.firstName}"
+                            type="button">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-info" th:if="${clients.empty}">
+            Список персон пуст.
+        </div>
+
+        <!-- Модальное окно для добавления/редактирования тарифа -->
+        <div aria-hidden="true" aria-labelledby="ClientModalLabel" class="modal fade" id="clientModal"
+             tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="container">
+                        <div id="content-modal-form-id" th:insert="~{client_edit_modal :: content_modal_form}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения удаления -->
+        <div aria-hidden="true" aria-labelledby="deleteConfirmModalLabel" class="modal fade" id="deleteConfirmModal"
+             tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                        <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы действительно хотите удалить данные о клиенте <strong id="deleteObjectName"></strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+                        <a class="btn btn-danger" id="confirmDeleteBtn">Удалить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

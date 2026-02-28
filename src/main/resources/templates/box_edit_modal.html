@@ -1,0 +1,74 @@
+<div th:fragment="content_modal_form" xmlns:th="http://www.thymeleaf.org">
+    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+
+    <form method="post" th:action="@{/box/save}" th:object="${box}">
+        <!--      <div th:with="clients=${multyObject.clients}, employees=${multyObject.employees}, boxes=${multyObject.boxes}">-->
+        <input id="boxId" th:field="*{id}" type="hidden"/>
+
+        <div class="modal-header">
+            <h5 class="modal-title" id="boxModalLabel">Добавить бокс </h5>
+            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="idBox">Обозначение:</label>
+                    <input class="form-control" id="idBox" placeholder="A101" required
+                           th:field="*{idBox}" type="text"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="square">Площадь (м²):</label>
+                    <input class="form-control" id="square" required step="0.01" th:field="*{square}"
+                           type="number"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="length">Длина (м):</label>
+                    <input class="form-control" id="length" required step="0.01" th:field="*{length}"
+                           type="number"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="width">Ширина (м):</label>
+                    <input class="form-control" id="width" required step="0.01" th:field="*{width}"
+                           type="number"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="height">Высота (м):</label>
+                    <input class="form-control" id="height" required step="0.01" th:field="*{height}"
+                           type="number"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="entrance">Тип входа:</label>
+                    <select class="form-select" id="entrance" th:field="*{entrance}">
+                        <option value="">Выберите тип входа</option>
+                        <option th:each="entrance : ${T(ru.storage.model.Entrance).values()}"
+                                th:text="${entrance.title}" th:value="${entrance}">Entrance
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3 form-check">
+                    <input class="form-check-input" id="isWarm" th:field="*{isWarm}" type="checkbox"/>
+                    <label class="form-check-label" for="isWarm">Отапливаемый</label>
+                </div>
+                <div class="col-md-6 mb-3 form-check">
+                    <input class="form-check-input" id="isElectricity" th:field="*{isElectricity}"
+                           type="checkbox"/>
+                    <label class="form-check-label" for="isElectricity">Электричество</label>
+                </div>
+                <div class="col-md-6 mb-3 form-check">
+                    <input class="form-check-input" id="isWater" th:field="*{isWater}" type="checkbox"/>
+                    <label class="form-check-label" for="isWater">Вода</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm()" type="button">
+                Отмена
+            </button>
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </div>
+
+    </form>
+</div>

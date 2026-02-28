@@ -1,0 +1,123 @@
+<div th:fragment="content_modal_form" xmlns:th="http://www.thymeleaf.org">
+    <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+    <form method="post" th:action="@{/account/save}" th:object="${account}">
+
+        <!--    <div th:with="clients=${multyObject.allClients}, employees=${multyObject.allEmployees}, allboxes=${multyObject.allBoxes}, boxes=${multyObject.boxes}">-->
+        <input id="accountId" th:field="*{id}" type="hidden"/>
+        <input id="boxes-form-edit" th:value="${@boxService.toJson(curboxes)}" type="hidden"/>
+
+        <div class="modal-header">
+            <h5 class="modal-title" id="accountModalLabel">Добавить счёт</h5>
+            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="dateStart">Дата открытия:</label>
+                    <input class="form-control" id="dateStart" required th:field="*{dateStart}"
+                           type="date"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="dateEnd">Дата закрытия:</label>
+                    <input class="form-control" id="dateEnd" th:field="*{dateEnd}" type="date"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="client">Клиент:</label>
+                    <select class="form-select" id="client" required th:field="*{client}">
+                        <option value="">Выберите клиента</option>
+                        <option th:each="client : ${clients}"
+                                th:text="${client.firstName + ' ' + client.lastName}"
+                                th:value="${client.id}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="employee">Сотрудник:</label>
+                    <select class="form-select" id="employee" required th:field="*{employee}">
+                        <option value="">Выберите сотрудника</option>
+                        <option th:each="employee : ${employees}"
+                                th:text="${employee.firstName + ' ' + employee.lastName}"
+                                th:value="${employee.id}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="statusBox">Статус:</label>
+                    <select class="form-select" id="statusBox" required th:field="*{statusBox}">
+                        <option th:each="status : ${T(ru.storage.model.StatusBox).values()}"
+                                th:text="${status.title}" th:value="${status}">Status
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="sumAmount">Сумма (₽):</label>
+                    <input class="form-control" id="sumAmount" placeholder="Введите сумму" required
+                           step="0.01" th:field="*{sumAmount}" type="number"/>
+                </div>
+
+                <!-- Таблица боксов вместо чекбоксов -->
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Выберите бокс:</label>
+                    <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary sticky-top">
+                            <tr>
+                                <th><input id="selectAllBoxes" onclick="toggleAllBoxes_account(this)" type="checkbox">
+                                </th>
+                                <th>Бокс</th>
+                                <th>Площадь (м²)</th>
+                                <th>Вход</th>
+                                <th>Отапливаемый</th>
+                                <th>Электричество</th>
+                                <th>Вода</th>
+                                <th>Цена (₽)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="box : ${allboxes}">
+                                <td>
+                                    <input class="form-check-input box-checkbox"
+                                           name="boxIds"
+                                           onchange="updateSelectedCount_account()"
+                                           th:id="|box-${box.id}|"
+                                           th:value="${box.id}"
+                                           type="checkbox"/>
+                                </td>
+                                <td><label th:for="|box-${box.id}|" th:text="${box.idBox}"></label></td>
+                                <td th:text="${box.square}"></td>
+                                <td th:text="${box.entrance.title}"></td>
+                                <td>
+                                    <span class="badge bg-success" th:if="${box.isWarm}">Да</span>
+                                    <span class="badge bg-secondary" th:unless="${box.isWarm}">Нет</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" th:if="${box.isElectricity}">Есть</span>
+                                    <span class="badge bg-secondary" th:unless="${box.isElectricity}">Нет</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" th:if="${box.isWater}">Есть</span>
+                                    <span class="badge bg-secondary" th:unless="${box.isWater}">Нет</span>
+                                </td>
+                                <td th:text="${box.price}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">Выбрано: <span id="selectedCount">0</span> из <span
+                                th:text="${#lists.size(allboxes)}"></span> боксов</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm_account()" type="button">
+                Отмена
+            </button>
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </div>
+
+    </form>
+
+</div>

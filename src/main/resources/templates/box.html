@@ -1,0 +1,187 @@
+<div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+
+    <div class="container mt-4">
+        <h2>Список боксов</h2>
+
+        <!-- Форма поиска -->
+        <form class="mb-4" method="get" th:action="@{/}">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input class="form-control"
+                           name="searchAll"
+                           placeholder="Поиск по ID"
+                           th:value="${#strings.isEmpty(param.searchAll) ? '' : param.searchAll}"
+                           type="text"/>
+                </div>
+                <!--                <div class="col-md-1">-->
+                <!--                    <input type="text"-->
+                <!--                           name="searchSq"-->
+                <!--                           class="form-control"-->
+                <!--                           placeholder="Поиск по площади"-->
+                <!--                           th:value="${#strings.isEmpty(param.searchSq) ? '' : param.searchSq}"/>-->
+                <!--                </div>-->
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">Найти</button>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-secondary w-100" th:href="@{/}">Сбросить</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Кнопка открытия модального окна добавления -->
+        <button class="btn btn-primary mb-3" data-bs-target="#boxModal"
+                data-bs-toggle="modal"
+                onclick="clearForm_box();"
+                th:attr="data-id-context-form=1"
+                type="button">
+            Добавить бокс
+        </button>
+
+        <!-- Таблица боксов -->
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Обозначение</th>
+                <th>Площадь (м²)</th>
+                <th>Длина (м)</th>
+                <th>Ширина (м)</th>
+                <th>Высота (м)</th>
+                <th>Вход</th>
+                <th>Отапливаемый</th>
+                <th>Электричество</th>
+                <th>Вода</th>
+                <th>Свободен</th>
+                <th>Цена (₽)</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="box : ${boxes}">
+                <td th:text="${box.id}"></td>
+                <td th:text="${box.idBox}"></td>
+                <td th:text="${box.square}"></td>
+                <td th:text="${box.length}"></td>
+                <td th:text="${box.width}"></td>
+                <td th:text="${box.height}"></td>
+                <td th:text="${box.entrance.title}"></td>
+                <td>
+                    <span class="badge bg-success" th:if="${box.isWarm}">Да</span>
+                    <span class="badge bg-secondary" th:if="${not box.isWarm}">Нет</span>
+                </td>
+                <td>
+                    <span class="badge bg-success" th:if="${box.isElectricity}">Есть</span>
+                    <span class="badge bg-secondary" th:if="${not box.isElectricity}">Нет</span>
+                </td>
+                <td>
+                    <span class="badge bg-success" th:if="${box.isWater}">Есть</span>
+                    <span class="badge bg-secondary" th:if="${not box.isWater}">Нет</span>
+                </td>
+                <td>
+                    <span class="badge bg-success" th:if="${box.isFree}">Свободен</span>
+                    <span class="badge bg-danger" th:if="${not box.isFree}">Занят</span>
+                </td>
+                <td th:text="${box.price}"></td>
+                <td>
+                    <!-- Кнопка Арендовать -->
+                    <button class="btn btn-sm btn-warning me-1" data-bs-target="#boxModal"
+                            data-bs-toggle="modal"
+                            onclick="rentBoxId(this)"
+                            th:attr="data-id=${box.id},
+                                    data-id-box=${box.idBox},
+                                    data-id-context-form=1"
+                            type="button">
+                        Арендовать
+                    </button>
+                    <!-- Кнопка Редактировать -->
+                    <button class="btn btn-sm btn-warning me-1" data-bs-target="#boxModal"
+                            data-bs-toggle="modal"
+                            onclick="editBox(this)"
+                            th:attr="data-id=${box.id},
+                                     data-id-box=${box.idBox},
+                                     data-square=${box.square},
+                                     data-length=${box.length},
+                                     data-width=${box.width},
+                                     data-height=${box.height},
+                                     data-entrance=${box.entrance},
+                                     data-is-warm=${box.isWarm},
+                                     data-is-electricity=${box.isElectricity},
+                                     data-is-water=${box.isWater},
+                                     data-id-context-form=0"
+                            type="button">
+                        Редактировать
+                    </button>
+
+                    <!-- Кнопка Удалить -->
+                    <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                            data-bs-toggle="modal"
+                            onclick="setDeleteId_box(this)"
+                            th:attr="data-id=${box.id}, data-id-box=${box.idBox}"
+                            type="button">
+                        Удалить
+                    </button>
+
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Навигация по страницам -->
+        <div class="mt-3" th:if="${boxPage.totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <span class="page-link" th:if="${currentPage == 0}">Назад</span>
+                    <a class="page-link" th:href="@{/(search=${param.search}, page=${currentPage - 1}, size=${size})}"
+                       th:unless="${currentPage == 0}">Назад</a>
+                </li>
+                <li class="page-item" th:classappend="${i == currentPage} ? 'active'"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a class="page-link" th:href="@{/(search=${param.search}, page=${i}, size=${size})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <span class="page-link" th:if="${currentPage == totalPages - 1}">Вперёд</span>
+                    <a class="page-link" th:href="@{/(search=${param.search}, page=${currentPage + 1}, size=${size})}"
+                       th:unless="${currentPage == totalPages - 1}">Вперёд</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования бокса -->
+    <div aria-hidden="true" aria-labelledby="boxModalLabel" class="modal fade" id="boxModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="container">
+                    <div id="content-modal-form-id" th:insert="~{box_edit_modal :: content_modal_form}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div aria-hidden="true" aria-labelledby="deleteConfirmModalLabel" class="modal fade" id="deleteConfirmModal"
+         tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Подтвердите действие</h5>
+                    <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <a id="TextFormVopros"></a>
+                    <strong id="BoxName"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+                    <a class="btn btn-danger" id="confirmDeleteBtn"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

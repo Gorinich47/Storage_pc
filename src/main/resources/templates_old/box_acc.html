@@ -1,0 +1,500 @@
+<div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+
+    <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+    <!--  <link rel="stylesheet" href="./CSS/bootstrap_min.css"/>-->
+    <!--  <script src="./JS/bootstrap_bundle_min.js" ></script>-->
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Управление: Боксы, Счета, Клиенты</h1>
+
+        <!-- Вкладки -->
+        <ul class="nav nav-tabs" id="entityTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-target="#box" data-bs-toggle="tab" id="box-tab" role="tab"
+                        type="button">
+                    Боксы
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-target="#account" data-bs-toggle="tab" id="account-tab" role="tab"
+                        type="button">
+                    Счета
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-target="#client" data-bs-toggle="tab" id="client-tab" role="tab"
+                        type="button">
+                    Клиенты
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="entityTabsContent">
+            <!-- Вкладка Боксов -->
+            <div class="tab-pane fade show active" id="box" role="tabpanel">
+                <h3>Список боксов</h3>
+
+                <!-- Кнопка открытия модальной формы добавления -->
+                <button class="btn btn-primary mb-3" data-bs-target="#boxModal" data-bs-toggle="modal"
+                        onclick="clearBoxForm()"
+                        type="button">
+                    Добавить бокс
+                </button>
+
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Обозначение</th>
+                        <th>Площадь (м²)</th>
+                        <th>Длина (м)</th>
+                        <th>Ширина (м)</th>
+                        <th>Высота (м)</th>
+                        <th>Вход</th>
+                        <th>Отапливаемый</th>
+                        <th>Электричество</th>
+                        <th>Вода</th>
+                        <th>Свободен</th>
+                        <th>Цена</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="box : ${boxes}">
+                        <td th:text="${box.id}"></td>
+                        <td th:text="${box.idBox}"></td>
+                        <td th:text="${box.square}"></td>
+                        <td th:text="${box.length}"></td>
+                        <td th:text="${box.width}"></td>
+                        <td th:text="${box.height}"></td>
+                        <td th:text="${box.entrance.title}"></td>
+                        <td>
+                            <span class="badge bg-success" th:if="${box.isWarm}">Да</span>
+                            <span class="badge bg-secondary" th:if="${not box.isWarm}">Нет</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${box.isElectricity}">Есть</span>
+                            <span class="badge bg-secondary" th:if="${not box.isElectricity}">Нет</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${box.isWater}">Есть</span>
+                            <span class="badge bg-secondary" th:if="${not box.isWater}">Нет</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${box.isFree}">Да</span>
+                            <span class="badge bg-secondary" th:if="${not box.isFree}">Нет</span>
+                        </td>
+                        <td th:text="${box.price}"></td>
+                        <td>
+                            <!-- Кнопка Редактировать -->
+                            <button class="btn btn-sm btn-warning me-1" data-bs-target="#boxModal"
+                                    data-bs-toggle="modal"
+                                    onclick="editBox(this)"
+                                    th:attr="data-id=${box.id},
+                               data-id-box=${box.idBox},
+                               data-square=${box.square},
+                               data-length=${box.length},
+                               data-width=${box.width},
+                               data-height=${box.height},
+                               data-entrance=${box.entrance},
+                               data-is-warm=${box.isWarm},
+                               data-is-electricity=${box.isElectricity},
+                               data-is-water=${box.isWater}"
+                                    type="button">
+                                Редактировать
+                            </button>
+
+                            <!-- Кнопка Удалить -->
+                            <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                                    data-bs-toggle="modal"
+                                    onclick="setDeleteId(this)"
+                                    th:attr="data-id=${box.id}, data-id-box=${box.idBox}"
+                                    type="button">
+                                Удалить
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Вкладка Счетов -->
+            <div class="tab-pane fade" id="account" role="tabpanel">
+                <h3>Список счетов</h3>
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Дата создания</th>
+                        <th>Дата открытия</th>
+                        <th>Дата закрытия</th>
+                        <th>Бокс</th>
+                        <th>Клиент</th>
+                        <th>Сотрудник</th>
+                        <th>Статус</th>
+                        <th>Сумма (₽)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="account : ${accounts}">
+                        <td th:text="${account.id}"></td>
+                        <td th:text="${@generalService.format(account.date, false)}"></td>
+                        <td th:text="${#dates.format(account.dateStart, 'dd.MM.yyyy')}"></td>
+                        <td th:text="${#dates.format(account.dateEnd, 'dd.MM.yyyy')}"></td>
+                        <!--            <td th:text="${account.box.idBox}"></td>-->
+                        <td>
+                            <span class="badge bg-info me-1" th:each="box : ${account.box}"
+                                  th:text="${box.idBox}"></span>
+                        </td>
+                        <td th:text="${account.client.firstName + ' ' + account.client.lastName}"></td>
+                        <td th:text="${account.employee.firstName + ' ' + account.employee.lastName}"></td>
+                        <td>
+              <span th:switch="${account.statusBox}">
+                  <span class="badge bg-success" th:case="'ACTIVE'">Активен</span>
+                  <span class="badge bg-secondary" th:case="'CLOSED'">Закрыт</span>
+                  <span class="badge bg-warning" th:case="*">Неизвестно</span>
+              </span>
+                        </td>
+                        <td th:text="${account.sumAmount}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Вкладка Клиентов (обновлённая) -->
+            <div class="tab-pane fade" id="client" role="tabpanel">
+                <h3>Список клиентов</h3>
+
+                <!-- Кнопка открытия модальной формы добавления -->
+                <button class="btn btn-primary mb-3" data-bs-target="#clientModal"
+                        data-bs-toggle="modal"
+                        onclick="clearClientForm(); localStorage.setItem('activeTab', '#client');"
+                        type="button">
+                    Добавить клиента
+                </button>
+
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Фамилия</th>
+                        <th>Имя</th>
+                        <th>Дата рождения</th>
+                        <th>Телефон</th>
+                        <th>Email</th>
+                        <th>Адрес</th>
+                        <th>Комментарий</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="client : ${clients}">
+                        <td th:text="${client.id}"></td>
+                        <td th:text="${client.firstName}"></td>
+                        <td th:text="${client.lastName}"></td>
+                        <td th:text="${#dates.format(client.birthDate, 'dd.MM.yyyy')}"></td>
+                        <td th:text="${client.phoneNumber}"></td>
+                        <td th:text="${client.emailAddress}"></td>
+                        <td th:text="${client.address}"></td>
+                        <td th:text="${client.comment}"></td>
+                        <td>
+                            <!-- Кнопка Редактировать -->
+                            <button class="btn btn-sm btn-warning me-1" data-bs-target="#clientModal"
+                                    data-bs-toggle="modal"
+                                    onclick="editClient(this)"
+                                    th:attr="data-id=${client.id},
+                                 data-first-name=${client.firstName},
+                                 data-last-name=${client.lastName},
+                                 data-birth-date=${#dates.format(client.birthDate, 'yyyy-MM-dd')},
+                                 data-phone-number=${client.phoneNumber},
+                                 data-email=${client.emailAddress},
+                                 data-address=${client.address},
+                                 data-comment=${client.comment}"
+                                    type="button">
+                                Редактировать
+                            </button>
+
+                            <!-- Кнопка Удалить -->
+                            <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                                    data-bs-toggle="modal"
+                                    onclick="setDeleteIdForClient(this)"
+                                    th:attr="data-id=${client.id}, data-id-box=${client.firstName + ' ' + client.lastName}"
+                                    type="button">
+                                Удалить
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования бокса -->
+    <div aria-hidden="true" aria-labelledby="boxModalLabel" class="modal fade" id="boxModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="post" th:action="@{/box/save}" th:object="${box}">
+                    <input id="boxId" th:field="*{id}" type="hidden"/>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="boxModalLabel">Добавить бокс</h5>
+                        <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="id_box">Обозначение:</label>
+                                <input class="form-control" id="id_box" placeholder="A101" required
+                                       th:field="*{idBox}" type="text"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="square">Площадь (м²):</label>
+                                <input class="form-control" id="square" required step="0.01" th:field="*{square}"
+                                       type="number"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="length">Длина (м):</label>
+                                <input class="form-control" id="length" required step="0.01" th:field="*{length}"
+                                       type="number"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="width">Ширина (м):</label>
+                                <input class="form-control" id="width" required step="0.01" th:field="*{width}"
+                                       type="number"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="height">Высота (м):</label>
+                                <input class="form-control" id="height" required step="0.01" th:field="*{height}"
+                                       type="number"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="entrance">Вход:</label>
+                                <select class="form-select" id="entrance" th:field="*{entrance}">
+                                    <option value="">Выберите тип входа</option>
+                                    <option th:each="entrance : ${T(ru.storage.model.Entrance).values()}"
+                                            th:text="${entrance.title}" th:value="${entrance}">Entrance
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3 form-check">
+                                <input class="form-check-input" id="isWarm" th:field="*{isWarm}" type="checkbox"/>
+                                <label class="form-check-label" for="isWarm">Отапливаемый</label>
+                            </div>
+                            <div class="col-md-6 mb-3 form-check">
+                                <input class="form-check-input" id="isElectricity" th:field="*{isElectricity}"
+                                       type="checkbox"/>
+                                <label class="form-check-label" for="isElectricity">Электричество</label>
+                            </div>
+                            <div class="col-md-6 mb-3 form-check">
+                                <input class="form-check-input" id="isWater" th:field="*{isWater}" type="checkbox"/>
+                                <label class="form-check-label" for="isWater">Вода</label>
+                            </div>
+                            <!--              <div class="col-md-6 mb-3 form-check">-->
+                            <!--                <input type="checkbox" th:field="*{isFree}" class="form-check-input" id="isFree"/>-->
+                            <!--                <label class="form-check-label" for="isFree">Свободен</label>-->
+                            <!--              </div>-->
+                            <!--              <div class="col-md-6 mb-3">-->
+                            <!--                <label for="price" class="form-label">Цена (₽):</label>-->
+                            <!--                <input type="number" th:field="*{price}" step="0.01" class="form-control" id="price"/>-->
+                            <!--              </div>-->
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearBoxForm()"
+                                type="button">Отмена
+                        </button>
+                        <button class="btn btn-primary" type="submit">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div aria-hidden="true" aria-labelledby="deleteConfirmModalLabel" class="modal fade" id="deleteConfirmModal"
+         tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Подтвердите удаление</h5>
+                    <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    Вы действительно хотите удалить бокс <strong id="deleteBoxName"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+                    <a class="btn btn-danger" id="confirmDeleteBtn">Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования клиента -->
+    <div aria-hidden="true" aria-labelledby="clientModalLabel" class="modal fade" id="clientModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="post" th:action="@{/client/save}" th:object="${client}">
+                    <input id="clientId" th:field="*{id}" type="hidden"/>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="clientModalLabel">Добавить клиента</h5>
+                        <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="firstName">Фамилия:</label>
+                                <input class="form-control" id="firstName" required th:field="*{firstName}"
+                                       type="text"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="lastName">Имя:</label>
+                                <input class="form-control" id="lastName" required th:field="*{lastName}" type="text"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="birthDate">Дата рождения:</label>
+                                <input class="form-control" id="birthDate" th:field="*{birthDate}" type="date"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="phoneNumber">Телефон:</label>
+                                <input class="form-control" id="phoneNumber" required th:field="*{phoneNumber}"
+                                       type="tel"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="emailAddress">Email:</label>
+                                <input class="form-control" id="emailAddress" th:field="*{emailAddress}" type="email"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="address">Адрес:</label>
+                                <input class="form-control" id="address" th:field="*{address}" type="text"/>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label" for="comment">Комментарий:</label>
+                                <textarea class="form-control" id="comment" rows="3" th:field="*{comment}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearClientForm()"
+                                type="button">Отмена
+                        </button>
+                        <button class="btn btn-primary" type="submit">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Восстанавливаем активную вкладку из localStorage
+            const savedTab = localStorage.getItem('activeTab');
+            const triggerEl = savedTab ? document.querySelector(`button[data-bs-target="${savedTab}"]`) : null;
+
+            if (triggerEl) {
+                bootstrap.Tab.getInstance(triggerEl)?.show();
+            } else {
+                // Если нет сохранённой — показываем вкладку "client" по умолчанию
+                const defaultTab = document.querySelector('button[data-bs-target="#client"]');
+                if (defaultTab) {
+                    bootstrap.Tab.getOrCreateInstance(defaultTab).show();
+                }
+            }
+
+            // Сохраняем активную вкладку при переключении
+            const tabButtons = document.querySelectorAll('.nav-tabs button[data-bs-toggle="tab"]');
+            tabButtons.forEach(button => {
+                button.addEventListener('shown.bs.tab', function (event) {
+                    localStorage.setItem('activeTab', event.target.getAttribute('data-bs-target'));
+                });
+            });
+
+            // Принудительно открываем вкладку "Клиенты", если была нажата кнопка "Добавить клиента"
+            const urlParams = new URLSearchParams(window.location.search);
+            const openClientTab = urlParams.get('openClientTab');
+            if (openClientTab === 'true') {
+                const clientTabButton = document.querySelector('button[data-bs-target="#client"]');
+                if (clientTabButton) {
+                    bootstrap.Tab.getOrCreateInstance(clientTabButton).show();
+                }
+            }
+
+        });
+
+        // Заполняет форму данными для редактирования
+        function editBox(button) {
+          document.getElementById('boxId').value = button.getAttribute('data-id');
+          document.getElementById('id_box').value = button.getAttribute('data-id-box');
+          document.getElementById('square').value = button.getAttribute('data-square');
+          document.getElementById('length').value = button.getAttribute('data-length');
+          document.getElementById('width').value = button.getAttribute('data-width');
+          document.getElementById('height').value = button.getAttribute('data-height');
+          document.getElementById('entrance').value = button.getAttribute('data-entrance');
+          document.getElementById('isWarm').checked = button.getAttribute('data-is-warm') === 'true';
+          document.getElementById('isElectricity').checked = button.getAttribute('data-is-electricity') === 'true';
+          document.getElementById('isWater').checked = button.getAttribute('data-is-water') === 'true';
+        }
+
+        // Очищает форму при добавлении нового
+        function clearBoxForm() {
+          document.getElementById('boxId').value = '';
+          document.getElementById('id_box').value = '';
+          document.getElementById('square').value = '';
+          document.getElementById('length').value = '';
+          document.getElementById('width').value = '';
+          document.getElementById('height').value = '';
+          document.getElementById('entrance').value = '';
+          document.getElementById('isWarm').checked = false;
+          document.getElementById('isElectricity').checked = false;
+          document.getElementById('isWater').checked = false;
+        }
+
+        // Устанавливает ID для удаления
+        function setDeleteId(button) {
+          const id = button.getAttribute('data-id');
+          const idBox = button.getAttribute('data-id-box');
+          document.getElementById('deleteBoxName').textContent = idBox;
+          document.getElementById('confirmDeleteBtn').href = '/box/delete?id=' + id;
+        }
+
+        // Заполняет форму данными для редактирования клиента
+        function editClient(button) {
+            document.getElementById('clientId').value = button.getAttribute('data-id');
+            document.getElementById('firstName').value = button.getAttribute('data-first-name');
+            document.getElementById('lastName').value = button.getAttribute('data-last-name');
+            document.getElementById('birthDate').value = button.getAttribute('data-birth-date');
+            document.getElementById('phoneNumber').value = button.getAttribute('data-phone-number');
+            document.getElementById('emailAddress').value = button.getAttribute('data-email');
+            document.getElementById('address').value = button.getAttribute('data-address');
+            document.getElementById('comment').value = button.getAttribute('data-comment');
+        }
+
+        // Очищает форму при добавлении нового клиента
+        function clearClientForm() {
+            document.getElementById('clientId').value = '';
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('birthDate').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('emailAddress').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('comment').value = '';
+        }
+
+        // Обновлённая функция для удаления клиента
+        function setDeleteIdForClient(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-id-box');
+            document.getElementById('deleteBoxName').textContent = name;
+            document.getElementById('confirmDeleteBtn').href = '/client/delete?id=' + id;
+        }
+    </script>
+</div>
+
