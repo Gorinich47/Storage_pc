@@ -34,7 +34,7 @@
         <!-- Кнопка открытия модального окна добавления -->
         <button class="btn btn-primary mb-3" data-bs-target="#boxModal"
                 data-bs-toggle="modal"
-                onclick="clearForm();"
+                onclick="clearForm('Добавить бокс');"
                 th:attr="data-id-context-form=1"
                 type="button">
             Добавить бокс
@@ -99,7 +99,7 @@
                     <!-- Кнопка Редактировать -->
                     <button class="btn btn-sm btn-warning me-1" data-bs-target="#boxModal"
                             data-bs-toggle="modal"
-                            onclick="editBox(this)"
+                            onclick="editModalForm(this, '/box/fragments/box_edit_modal', 'Редактировать бокс')"
                             th:attr="data-id=${box.id},
                                      data-id-box=${box.idBox},
                                      data-square=${box.square},
@@ -109,8 +109,7 @@
                                      data-entrance=${box.entrance},
                                      data-is-warm=${box.isWarm},
                                      data-is-electricity=${box.isElectricity},
-                                     data-is-water=${box.isWater},
-                                     data-id-context-form=0"
+                                     data-is-water=${box.isWater}"
                             type="button">
                         Редактировать
                     </button>

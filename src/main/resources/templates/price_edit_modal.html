@@ -1,0 +1,49 @@
+<div th:fragment="content_modal_form" xmlns:th="http://www.thymeleaf.org">
+
+    <form id="edit_modal_form"
+          method="post"
+          th:action="@{${saveUrl}}"
+          th:object="${object}">
+
+        <input id="data-id" name="priceId" th:field="*{id}" type="hidden"/>
+        <div class="modal-header">
+            <h5 class="modal-title" id="objectModalLabel">Тариф</h5>
+            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal"
+                    type="button"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label" for="data-box-id">Бокс:</label>
+                <select class="form-select" id="data-box-id" name="boxId" required th:field="*{box}">
+                    <option value="">Выберите бокс</option>
+                    <option th:each="box : ${allboxes}" th:text="${box.idBox}"
+                            th:value="${box.id}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="data-sum_price">Цена (₽):</label>
+                <input class="form-control" id="data-sum_price" name="sum_price" placeholder="Введите цену"
+                       required step="0.01" th:field="*{sumPrice}" type="number"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('sumPrice')}">
+                    <small th:errors="*{sum_price}"></small>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="data-date-start">Дата начала действия:</label>
+                <input class="form-control" id="data-date-start" name="dateStart" required
+                       th:field="*{dateStart}" type="date"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="data-date-end">Дата окончания действия:</label>
+                <input class="form-control" id="data-date-end" name="dateEnd" th:field="*{dateEnd}"
+                       type="date"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm()"
+                    type="button">Отмена
+            </button>
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </div>
+    </form>
+</div>

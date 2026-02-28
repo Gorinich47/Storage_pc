@@ -73,7 +73,7 @@ public class ClientController {
         // Данные для форм
         model.addAttribute("clients", clientRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("box", new Box());
+        model.addAttribute("object", new Box());
 
         return "index";
     }
@@ -82,8 +82,8 @@ public class ClientController {
     // Страница Боксы
     // Сохранение бокса
     @PostMapping("/box/save")
-    public String saveBox(@ModelAttribute Box box) {
-        boxRepository.save(box);
+    public String saveBox(@ModelAttribute Box object) {
+        boxRepository.save(object);
         return "redirect:/";
     }
 
@@ -104,7 +104,7 @@ public class ClientController {
         model.addAttribute("boxes", boxes);
         model.addAttribute("clients", clientRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("account", new Account()); // для формы
+        model.addAttribute("object", new Account()); // для формы
 
         // Добавляем параметр для открытия модального окна
         model.addAttribute("openAccountModal", 1);
@@ -118,9 +118,10 @@ public class ClientController {
         List<Box> boxes = List.of(boxRepository.findById(id).get());
         model.addAttribute("clients", clientRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("account", new Account()); // для формы
+        model.addAttribute("object", new Account()); // для формы
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
         model.addAttribute("curboxes", boxes);
+        model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";
     }
@@ -128,9 +129,8 @@ public class ClientController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/box/fragments/box_edit_modal")
     public String getBoxEditModal(Model model, @RequestParam Integer id) {
-        model.addAttribute("box", boxRepository.findById(id).get());
-
-        model.addAttribute("box", new Box());
+        model.addAttribute("object", boxRepository.findById(id).get());
+        //model.addAttribute("box", new Box());
         return "box_edit_modal :: content_modal_form";
     }
 
@@ -145,7 +145,7 @@ public class ClientController {
         model.addAttribute("curboxes", new ArrayList<Box>());
         model.addAttribute("clients", clientRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("account", new Account()); // для формы
+        model.addAttribute("object", new Account()); // для формы
         model.addAttribute("openAccountModal", 1001);
         return "index";
     }
@@ -157,12 +157,15 @@ public class ClientController {
         Account account = accountRepository.findById(id).orElse(null);
         if (account != null) {
             boxes = account.getBox();
+        } else {
+            account = new Account();
         }
         model.addAttribute("clients", clientRepository.findAll());
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("account", new Account()); // для формы
+        model.addAttribute("object", account); // для формы
         model.addAttribute("curboxes", boxes);
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";
     }
@@ -170,11 +173,11 @@ public class ClientController {
     // сохранение счета
     @PostMapping("/account/save")
     public String saveAccount(
-            @ModelAttribute Account account,
+            @ModelAttribute Account object,
             @RequestParam(value = "boxIds", required = false) Integer[] boxIds) {
 
-        account.setBox(boxRepository.findByIdIn(List.of(boxIds)));
-        accountRepository.save(account);
+        object.setBox(boxRepository.findByIdIn(List.of(boxIds)));
+        accountRepository.save(object);
         return "redirect:/account"; // /list?openTab=account";
     }
 
@@ -191,7 +194,7 @@ public class ClientController {
     public String getAllPersons(Model model) {
         model.addAttribute("content", "client");
         model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
-        model.addAttribute("Object", new Client());
+        model.addAttribute("object", new Client());
         return "index";
         //return "redirect:/client/list";
     }
@@ -199,7 +202,7 @@ public class ClientController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/client/fragments/client_edit_modal")
     public String getClientEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("Object", clientRepository.findById(id).get());
+        model.addAttribute("object", clientRepository.findById(id).get());
         model.addAttribute("saveUrl", "/client/save");
         //model.addAttribute("client", new Client());
         return "client_edit_modal :: content_modal_form";
@@ -207,8 +210,8 @@ public class ClientController {
 
     // Сохранение клиента
     @PostMapping("/client/save")
-    public String saveClient(@ModelAttribute Client client) {
-        clientRepository.save(client);
+    public String saveClient(@ModelAttribute Client object) {
+        clientRepository.save(object);
         return "redirect:/client";
     }
 
@@ -225,14 +228,14 @@ public class ClientController {
     public String listEmployees(Model model) {
         model.addAttribute("content", "employee");
         model.addAttribute("employees", employeeRepository.findAll());
-        model.addAttribute("Object", new Employee());
+        model.addAttribute("object", new Employee());
         return "index";
     }
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/employee/fragments/client_edit_modal")
     public String getEmployeetEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("Object", employeeRepository.findById(id).get());
+        model.addAttribute("object", employeeRepository.findById(id).get());
         model.addAttribute("saveUrl", "/employee/save");
         //model.addAttribute("client", new Client());
         return "client_edit_modal :: content_modal_form";
@@ -240,8 +243,8 @@ public class ClientController {
 
     // сохранение сотрудника
     @PostMapping("/employee/save")
-    public String saveEmployee(@ModelAttribute Employee employee) {
-        employeeRepository.save(employee);
+    public String saveEmployee(@ModelAttribute Employee object) {
+        employeeRepository.save(object);
         return "redirect:/employee"; //list?openTab=employee";
     }
 
@@ -258,16 +261,26 @@ public class ClientController {
         model.addAttribute("content", "price");
         model.addAttribute("prices", priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc());
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
-        model.addAttribute("newPrice", new Price());
+        model.addAttribute("object", new Price());
         return "index";
+    }
+
+    // форма изменения/добавления данных о боксе
+    @GetMapping("/price/fragments/price_edit_modal")
+    public String getPriceEditModal(Model model, @RequestParam Long id) {
+        model.addAttribute("object", priceRepository.findById(id).get());
+        model.addAttribute("saveUrl", "/price/save");
+        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        //model.addAttribute("client", new Client());
+        return "price_edit_modal :: content_modal_form";
     }
 
     // сохранить тариф
     @PostMapping("/price/save")
-    public String savePrice(@Valid @ModelAttribute Price newPrice,
+    public String savePrice(@Valid @ModelAttribute Price object,
                             BindingResult result,
                             Model model) {
-        priceRepository.save(newPrice);
+        priceRepository.save(object);
 
         return "redirect:/price";
     }

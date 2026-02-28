@@ -7,9 +7,9 @@
         <button class="btn btn-primary mb-3"
                 data-bs-target="#clientModal"
                 data-bs-toggle="modal"
-                onclick="clearForm();"
+                onclick="clearForm('Добавить клиента');"
                 type="button">
-            Добавить счёт
+            Добавить клиента
         </button>
 
         <table class="table table-striped table-hover">
@@ -39,7 +39,7 @@
                 <td>
                     <button class="btn btn-sm btn-warning" data-bs-target="#clientModal"
                             data-bs-toggle="modal"
-                            onclick="editClient(this)"
+                            onclick="editModalForm(this,'/client/fragments/client_edit_modal', 'Редактировать клиента')"
                             th:attr="data-id=${client.id},
                                     data-first-name=${client.firstName},
                                     data-last-name=${client.lastName},

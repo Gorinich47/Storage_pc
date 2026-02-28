@@ -8,7 +8,7 @@
         <!-- Кнопка открытия модального окна добавления -->
         <button class="btn btn-primary mb-3" data-bs-target="#employeeModal"
                 data-bs-toggle="modal"
-                onclick="clearForm();"
+                onclick="clearForm('Добавить сотрудника');"
                 type="button">
             Добавить сотрудника
         </button>
@@ -51,7 +51,7 @@
                     <!-- Кнопка Редактировать -->
                     <button class="btn btn-sm btn-warning me-1" data-bs-target="#employeeModal"
                             data-bs-toggle="modal"
-                            onclick="editEmployee(this)"
+                            onclick="editModalForm(this,'/employee/fragments/client_edit_modal','Редактировать сотрудника')"
                             th:attr="data-id=${employee.id},
                                  data-first-name=${employee.firstName},
                                  data-last-name=${employee.lastName},

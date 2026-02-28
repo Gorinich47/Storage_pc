@@ -1,11 +1,14 @@
 
 // Очищает форму при добавлении нового
-function clearForm(){
+function clearForm(textLabelForm=''){
     const form = document.getElementById('edit_modal_form');
      form.querySelectorAll('input').forEach(input => input.value = '');
-     form.querySelectorAll('select').forEach(select => select.selectedIndex= -1);
+     form.querySelectorAll('select').forEach(select => select.selectedIndex= 0);
      form.querySelectorAll('.form-check-input').forEach(check=> check.checked = false);
      updateSelectedCount_account();
+      if(textLabelForm!=''){
+         document.getElementById('objectModalLabel').textContent = textLabelForm;
+      }
 }
 
 // Устанавливает ID для удаления
@@ -15,14 +18,47 @@ function setDeleteId(button) {
     const data_form_question_object = button.getAttribute('data-form-question-object'); // имя объекта, например БОКС, СЧЕТ, Тариф
     const data_form_question_name = button.getAttribute('data-form-question-name'); // имя из удаляемой записи
 
-
     document.getElementById('textFormQuestion').textContent = 'Вы действительно хотите удалить '+data_form_question_object;
     document.getElementById('objectNameFormQuestion').textContent = data_form_question_name;
     document.getElementById('confirmDeleteBtn').href = '/'+object_from_url_delete+'/delete?id=' + id;
 }
 
+// Заполнение формы по атрибутам
+function getArrayAtributesFromButton(button, prefix='data-', strReplace='',toCamelCase=false){
 
-////// box
+    const dataAttributes = {};
+
+    // Перебираем все атрибуты элемента
+    Array.from(button.attributes).forEach(attr => {
+        // Фильтруем только data-атрибуты (начинающиеся с "data-")
+        if (attr.name.startsWith(prefix)) {
+            // Преобразуем имя атрибута из kebab-case в camelCase для удобства
+            const key = attr.name.replace(strReplace, '');  // Убираем префикс "data-"
+            // если нужно сделать забором, то удалим тире и пробелы и сделаем первую букву заглавной
+            if(toCamelCase){
+                key.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase()); // kebab-case → camelCase
+            }
+
+            dataAttributes[key] = attr.value;
+        }
+    });
+
+    // Выводим объект с данными в консоль для отладки
+    //console.log('Data attributes:', dataAttributes);
+    return dataAttributes;
+}
+function setAttribytesFromArray(dataAttributes){
+
+    // Автоматически заполняем поля формы по соответствию ключей
+    Object.keys(dataAttributes).forEach(key => {
+        const element = document.getElementById(key);
+        if (element) {
+            element.value = dataAttributes[key];
+        }
+    });
+}
+
+
 
 // Устанавливает ID для аренды
 function rentBoxId(button) {
@@ -37,7 +73,6 @@ function rentBoxId(button) {
         })
         .then(html => {
             document.getElementById('content-modal-form-id').innerHTML = html;
-            //document.querySelector('#idBox').value = button.getAttribute('data-id-box');
 
             // Установка выбранных боксов из boxes-edit
             setCheckedBoxes_account();
@@ -47,15 +82,12 @@ function rentBoxId(button) {
     )
     .catch(error => console.error('Error loading fragment:', error));
 }
-
-// Заполняет форму редактирования бокса
-function editBox(button) {
-
+// Заполняет форму редактирования
+function editModalForm(button, fragmentPath, textLabelForm='', isAccountEdit=false, prefix='data-',strReplace='' ,toCamelCase=false){
     const id = button.getAttribute('data-id');
-    const idBox = button.getAttribute('data-id-box');
 
     // Создаем временный элемент для загрузки нового содержимого
-    fetch('/box/fragments/box_edit_modal?id='+id)
+    fetch(fragmentPath+'?id='+id)
          .then(response => {
             if (!response.ok) throw new Error('Ошибка сети');
             return response.text(); // Получаем HTML как текст
@@ -63,58 +95,24 @@ function editBox(button) {
         .then(html => {
             document.getElementById('content-modal-form-id').innerHTML = html;
             // Заполняем поля формы
-            document.querySelector('#boxId').value = button.getAttribute('data-id');
-            document.querySelector('#idBox').value = button.getAttribute('data-id-box');
-            document.querySelector('#square').value = button.getAttribute('data-square');
-            document.querySelector('#length').value = button.getAttribute('data-length');
-            document.querySelector('#width').value = button.getAttribute('data-width');
-            document.querySelector('#height').value = button.getAttribute('data-height');
-            document.querySelector('#entrance').value = button.getAttribute('data-entrance');
-            document.querySelector('#isWarm').checked = button.getAttribute('data-is-warm') === 'true';
-            document.querySelector('#isElectricity').checked = button.getAttribute('data-is-electricity') === 'true';
-            document.querySelector('#isWater').checked = button.getAttribute('data-is-water') === 'true';
+            // Получаем все data-атрибуты кнопки и заполняим ими форму
+            const dataAttributes = getArrayAtributesFromButton(button, prefix, strReplace, toCamelCase);
+            setAttribytesFromArray(dataAttributes);
+            if(textLabelForm!=''){
+                document.getElementById('objectModalLabel').textContent = textLabelForm;
+            }
+            if(isAccountEdit){
+                // Установка выбранных боксов из boxes-edit
+                setCheckedBoxes_account();
+                // Обновляем счётчик
+                updateSelectedCount_account();
+            }
         }
     )
     .catch(error => console.error('Error loading fragment:', error));
 }
 
-///// account
-function editAccount(button) {
 
-    const id = button.getAttribute('data-id');
-    //const idBox = button.getAttribute('data-id-box');
-
-    // Создаем временный элемент для загрузки нового содержимого
-    fetch('/account/fragments/account_edit_modal?id='+id)
-        .then(response => {
-            if (!response.ok) throw new Error('Ошибка сети');
-            return response.text(); // Получаем HTML как текст
-        })
-        .then(html => {
-            document.getElementById('content-modal-form-id').innerHTML = html;
-            // Заполняем поля формы
-            document.getElementById('accountId').value = button.getAttribute('data-id');
-            document.getElementById('dateStart').value = button.getAttribute('data-date-start');
-            document.getElementById('dateEnd').value = button.getAttribute('data-date-end');
-            document.getElementById('client').value = button.getAttribute('data-client-id');
-            document.getElementById('employee').value = button.getAttribute('data-employee-id');
-            document.getElementById('statusBox').value = button.getAttribute('data-status');
-            document.getElementById('sumAmount').value = button.getAttribute('data-sum-amount');
-            //document.querySelectorAll('input[name="boxIds"]').forEach(cb => cb.checked = true);
-            //document.getElementById('boxes-form-edit').value = button.getAttribute('data-boxes');
-            document.getElementById('accountModalLabel').textContent = 'Редактировать счёт';
-
-            // Установка выбранных боксов из boxes-edit
-            setCheckedBoxes_account();
-            // Обновляем счётчик
-            updateSelectedCount_account();
-        }
-    )
-    .catch(error => console.error('Error loading fragment:', error));
-
-}
-
-///// accout_edit_modal
 // Обновление счётчика выбранных боксов
 function updateSelectedCount_account() {
     const isCountElem = document.getElementById('selectedCount');
@@ -123,12 +121,10 @@ function updateSelectedCount_account() {
         document.getElementById('selectedCount').textContent = checkedBoxes.length;
     }
 }
-
 // Выделение всех/снятие всех чекбоксов
 function toggleAllBoxes_account(source) {
     setCheckedBoxesChecked_account(source.checked)
 }
-
 function setCheckedBoxesChecked_account(checked){
    const checkboxes = document.querySelectorAll('.box-checkbox');
        checkboxes.forEach(checkbox => {
@@ -136,7 +132,6 @@ function setCheckedBoxesChecked_account(checked){
        });
        updateSelectedCount_account();
 }
-
 // Установка выбранных боксов из boxes-edit
 function setCheckedBoxes_account() {
     const boxesEditInput = document.getElementById('boxes-form-edit');
@@ -163,81 +158,3 @@ function setCheckedBoxes_account() {
         console.error('Error parsing boxes-edit value:', e);
     }
 }
-
-///// price
-// Заполняет форму данными для редактирования
-function editPrice(button) {
-    const id = button.getAttribute('data-id');
-    const boxId = button.getAttribute('data-box-id');
-    const sum_price = button.getAttribute('data-sum_price');
-    const dateStart = button.getAttribute('data-date-start');
-    const dateEnd = button.getAttribute('data-date-end');
-
-    document.getElementById('priceId').value = id;
-    document.getElementById('boxId').value = boxId;
-    document.getElementById('sum_price').value = sum_price;
-    document.getElementById('dateStart').value = dateStart;
-    document.getElementById('dateEnd').value = dateEnd;
-    document.getElementById('addPriceModalLabel').textContent = 'Редактировать тариф';
-}
-
-///// client
-// Заполняет форму данными для редактирования
-function editClient(button) {
-
-    const id = button.getAttribute('data-id');
-    // Создаем временный элемент для загрузки нового содержимого
-    fetch('/client/fragments/client_edit_modal?id='+id)
-         .then(response => {
-            if (!response.ok) throw new Error('Ошибка сети');
-            return response.text(); // Получаем HTML как текст
-        })
-        .then(html => {
-            document.getElementById('content-modal-form-id').innerHTML = html;
-            // Заполняем поля формы
-            setAtributeValue_Person(button)
-            document.getElementById('comment').value =  button.getAttribute('data-comment');
-            document.getElementById('personModalLabel').textContent = 'Редактировать клиента';
-        }
-    )
-    .catch(error => console.error('Error loading fragment:', error));
-}
-
-function setAtributeValue_Person(button){
-    document.getElementById('objectId').value =  button.getAttribute('data-id');
-    document.getElementById('firstName').value =  button.getAttribute('data-first-name');
-    document.getElementById('lastName').value =  button.getAttribute('data-last-name');
-    document.getElementById('birthDate').value =  button.getAttribute('data-birth-date');
-    document.getElementById('phoneNumber').value =  button.getAttribute('data-phone-number');
-    document.getElementById('emailAddress').value =  button.getAttribute(' data-email');
-    document.getElementById('address').value =  button.getAttribute('data-address');
-}
-
-
-// Заполняет форму данными для редактирования
-function editEmployee(button) {
-
-    const id = button.getAttribute('data-id');
-    // Создаем временный элемент для загрузки нового содержимого
-    fetch('/employee/fragments/client_edit_modal?id='+id)
-         .then(response => {
-            if (!response.ok) throw new Error('Ошибка сети');
-            return response.text(); // Получаем HTML как текст
-        })
-        .then(html => {
-            document.getElementById('content-modal-form-id').innerHTML = html;
-            // Заполняем поля формы
-            setAtributeValue_Person(button)
-            document.getElementById('postEmployee').value = button.getAttribute('data-post');
-            document.getElementById('dateStart').value = button.getAttribute('data-date-start');
-            document.getElementById('dateEnd').value = button.getAttribute('data-date-end');
-            document.getElementById('isFullTime').checked = button.getAttribute('data-is-full-time') === 'true';
-            document.getElementById('personModalLabel').textContent = 'Редактировать сотрудника';
-        }
-    )
-    .catch(error => console.error('Error loading fragment:', error));
-}
-
-
-
-

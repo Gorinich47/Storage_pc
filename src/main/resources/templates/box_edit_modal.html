@@ -5,46 +5,46 @@
     <form id="edit_modal_form"
           method="post"
           th:action="@{/box/save}"
-          th:object="${box}">
+          th:object="${object}">
 
     <!--      <div th:with="clients=${multyObject.clients}, employees=${multyObject.employees}, boxes=${multyObject.boxes}">-->
         <input id="boxId" th:field="*{id}" type="hidden"/>
 
         <div class="modal-header">
-            <h5 class="modal-title" id="boxModalLabel">Добавить бокс </h5>
+            <h5 class="modal-title" id="objectModalLabel">Добавить бокс </h5>
             <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
         </div>
 
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="idBox">Обозначение:</label>
-                    <input class="form-control" id="idBox" placeholder="A101" required
+                    <label class="form-label" for="data-id-box">Обозначение:</label>
+                    <input class="form-control" id="data-id-box" placeholder="A101" required
                            th:field="*{idBox}" type="text"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="square">Площадь (м²):</label>
-                    <input class="form-control" id="square" required step="0.01" th:field="*{square}"
+                    <label class="form-label" for="data-square">Площадь (м²):</label>
+                    <input class="form-control" id="data-square" required step="0.01" th:field="*{square}"
                            type="number"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="length">Длина (м):</label>
-                    <input class="form-control" id="length" required step="0.01" th:field="*{length}"
+                    <label class="form-label" for="data-length">Длина (м):</label>
+                    <input class="form-control" id="data-length" required step="0.01" th:field="*{length}"
                            type="number"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="width">Ширина (м):</label>
-                    <input class="form-control" id="width" required step="0.01" th:field="*{width}"
+                    <label class="form-label" for="data-width">Ширина (м):</label>
+                    <input class="form-control" id="data-width" required step="0.01" th:field="*{width}"
                            type="number"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="height">Высота (м):</label>
-                    <input class="form-control" id="height" required step="0.01" th:field="*{height}"
+                    <label class="form-label" for="data-height">Высота (м):</label>
+                    <input class="form-control" id="data-height" required step="0.01" th:field="*{height}"
                            type="number"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="entrance">Тип входа:</label>
-                    <select class="form-select" id="entrance" th:field="*{entrance}">
+                    <label class="form-label" for="data-entrance">Тип входа:</label>
+                    <select class="form-select" id="data-entrance" th:field="*{entrance}">
                         <option value="">Выберите тип входа</option>
                         <option th:each="entrance : ${T(ru.storage.model.Entrance).values()}"
                                 th:text="${entrance.title}" th:value="${entrance}">Entrance
@@ -52,17 +52,17 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="isWarm" th:field="*{isWarm}" type="checkbox"/>
-                    <label class="form-check-label" for="isWarm">Отапливаемый</label>
+                    <input class="form-check-input" id="data-is-warm" th:field="*{isWarm}" type="checkbox"/>
+                    <label class="form-check-label" for="data-is-warm">Отапливаемый</label>
                 </div>
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="isElectricity" th:field="*{isElectricity}"
+                    <input class="form-check-input" id="data-is-electricity" th:field="*{isElectricity}"
                            type="checkbox"/>
-                    <label class="form-check-label" for="isElectricity">Электричество</label>
+                    <label class="form-check-label" for="data-is-electricity">Электричество</label>
                 </div>
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="isWater" th:field="*{isWater}" type="checkbox"/>
-                    <label class="form-check-label" for="isWater">Вода</label>
+                    <input class="form-check-input" id="data-is-water" th:field="*{isWater}" type="checkbox"/>
+                    <label class="form-check-label" for="data-is-water">Вода</label>
                 </div>
             </div>
         </div>

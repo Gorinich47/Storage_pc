@@ -3,32 +3,32 @@
     <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
     <form id="edit_modal_form"
           method="post"
-          th:action="@{/account/save}"
-          th:object="${account}">
+          th:action="@{${saveUrl}}"
+          th:object="${object}">
 
         <!--    <div th:with="clients=${multyObject.allClients}, employees=${multyObject.allEmployees}, allboxes=${multyObject.allBoxes}, boxes=${multyObject.boxes}">-->
         <input id="accountId" th:field="*{id}" type="hidden"/>
         <input id="boxes-form-edit" th:value="${@boxService.toJson(curboxes)}" type="hidden"/>
 
         <div class="modal-header">
-            <h5 class="modal-title" id="accountModalLabel">Добавить счёт</h5>
+            <h5 class="modal-title" id="objectModalLabel">Добавить счёт</h5>
             <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
         </div>
 
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="dateStart">Дата открытия:</label>
-                    <input class="form-control" id="dateStart" required th:field="*{dateStart}"
+                    <label class="form-label" for="data-date-start">Дата открытия:</label>
+                    <input class="form-control" id="data-date-start" required th:field="*{dateStart}"
                            type="date"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="dateEnd">Дата закрытия:</label>
-                    <input class="form-control" id="dateEnd" th:field="*{dateEnd}" type="date"/>
+                    <label class="form-label" for="data-date-end">Дата закрытия:</label>
+                    <input class="form-control" id="data-date-end" th:field="*{dateEnd}" type="date"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="client">Клиент:</label>
-                    <select class="form-select" id="client" required th:field="*{client}">
+                    <label class="form-label" for="data-client-id">Клиент:</label>
+                    <select class="form-select" id="data-client-id" required th:field="*{client}">
                         <option value="">Выберите клиента</option>
                         <option th:each="client : ${clients}"
                                 th:text="${client.firstName + ' ' + client.lastName}"
@@ -36,8 +36,8 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="employee">Сотрудник:</label>
-                    <select class="form-select" id="employee" required th:field="*{employee}">
+                    <label class="form-label" for="data-employee-id">Сотрудник:</label>
+                    <select class="form-select" id="data-employee-id" required th:field="*{employee}">
                         <option value="">Выберите сотрудника</option>
                         <option th:each="employee : ${employees}"
                                 th:text="${employee.firstName + ' ' + employee.lastName}"
@@ -45,16 +45,16 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="statusBox">Статус:</label>
-                    <select class="form-select" id="statusBox" required th:field="*{statusBox}">
+                    <label class="form-label" for="data-status">Статус:</label>
+                    <select class="form-select" id="data-status" required th:field="*{statusBox}">
                         <option th:each="status : ${T(ru.storage.model.StatusBox).values()}"
                                 th:text="${status.title}" th:value="${status}">Status
                         </option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="sumAmount">Сумма (₽):</label>
-                    <input class="form-control" id="sumAmount" placeholder="Введите сумму" required
+                    <label class="form-label" for="data-sum-amount">Сумма (₽):</label>
+                    <input class="form-control" id="data-sum-amount" placeholder="Введите сумму" required
                            step="0.01" th:field="*{sumAmount}" type="number"/>
                 </div>
 

@@ -3,21 +3,21 @@
     <form id="edit_modal_form"
           method="post"
           th:action="@{${saveUrl}}"
-          th:object="${Object}">
+          th:object="${object}">
 
         <input id="objectId" th:field="*{id}" type="hidden"/>
 
         <div class="modal-header">
-            <h5 class="modal-title" id="personModalLabel">Добавить клиента</h5>
+            <h5 class="modal-title" id="objectModalLabel">Добавить</h5>
             <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
         </div>
 
         <div class="modal-body">
 
             <div class="mb-3">
-                <label class="form-label" for="firstName">Фамилия:</label>
+                <label class="form-label" for="data-first-name">Фамилия:</label>
                 <input class="form-control"
-                       id="firstName"
+                       id="data-first-name"
                        placeholder="Введите фамилию"
                        th:field="*{firstName}"
                        type="text"/>
@@ -27,9 +27,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="lastName">Имя:</label>
+                <label class="form-label" for="data-last-name">Имя:</label>
                 <input class="form-control"
-                       id="lastName"
+                       id="data-last-name"
                        placeholder="Введите имя"
                        th:field="*{lastName}"
                        type="text"/>
@@ -39,9 +39,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="birthDate">Дата рождения:</label>
+                <label class="form-label" for="data-birth-date">Дата рождения:</label>
                 <input class="form-control"
-                       id="birthDate"
+                       id="data-birth-date"
                        th:field="*{birthDate}"
                        type="date"/>
                 <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}">
@@ -50,9 +50,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="phoneNumber">Телефон:</label>
+                <label class="form-label" for="data-phone-number">Телефон:</label>
                 <input class="form-control"
-                       id="phoneNumber"
+                       id="data-phone-number"
                        placeholder="+7 (999) 999-99-99"
                        th:field="*{phoneNumber}"
                        type="tel"/>
@@ -62,9 +62,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="emailAddress">Email:</label>
+                <label class="form-label" for="data-email">Email:</label>
                 <input class="form-control"
-                       id="emailAddress"
+                       id="data-email"
                        placeholder="example@example.com"
                        th:field="*{emailAddress}"
                        type="email"/>
@@ -74,9 +74,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="address">Адрес:</label>
+                <label class="form-label" for="data-address">Адрес:</label>
                 <input class="form-control"
-                       id="address"
+                       id="data-address"
                        placeholder="Введите адрес"
                        th:field="*{address}"
                        type="text"/>
@@ -84,10 +84,10 @@
                     <small th:errors="*{address}"></small>
                 </div>
             </div>
-            <div th:if="${Object instanceof T(ru.storage.model.Employee)}">
+            <div th:if="${object instanceof T(ru.storage.model.Employee)}">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="postEmployee">Должность:</label>
-                    <select class="form-select" id="postEmployee" th:field="*{postEmployee}">
+                    <label class="form-label" for="data-post">Должность:</label>
+                    <select class="form-select" id="data-post" th:field="*{postEmployee}">
                         <option value="">Выберите должность</option>
                         <option th:each="post : ${T(ru.storage.model.PostEmployee).values()}"
                                 th:text="${post.title}" th:value="${post}">Post
@@ -96,25 +96,25 @@
                 </div>
 
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="isFullTime" th:field="*{isFullTime}"
+                    <input class="form-check-input" id="data-is-full-time" th:field="*{isFullTime}"
                            type="checkbox"/>
-                    <label class="form-check-label" for="isFullTime">Полная занятость</label>
+                    <label class="form-check-label" for="data-is-full-time">Полная занятость</label>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="dateStart">Дата приёма:</label>
-                    <input class="form-control" id="dateStart" required th:field="*{dateStart}"
+                    <label class="form-label" for="data-date-start">Дата приёма:</label>
+                    <input class="form-control" id="data-date-start" required th:field="*{dateStart}"
                            type="date"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="dateEnd">Дата увольнения:</label>
-                    <input class="form-control" id="dateEnd" th:field="*{dateEnd}" type="date"/>
+                    <label class="form-label" for="data-date-end">Дата увольнения:</label>
+                    <input class="form-control" id="data-date-end" th:field="*{dateEnd}" type="date"/>
                 </div>
             </div>
-            <div th:unless="${Object instanceof T(ru.storage.model.Employee)}">
+            <div th:unless="${object instanceof T(ru.storage.model.Employee)}">
                 <div class="mb-3">
-                    <label class="form-label" for="comment">Комментарий:</label>
+                    <label class="form-label" for="data-comment">Комментарий:</label>
                     <input class="form-control"
-                           id="comment"
+                           id="data-comment"
                            placeholder="Введите комментарий"
                            th:field="*{comment}"
                            type="text"/>

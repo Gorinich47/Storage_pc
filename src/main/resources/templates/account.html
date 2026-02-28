@@ -10,7 +10,7 @@
         <button class="btn btn-primary mb-3"
                 data-bs-target="#accountModal"
                 data-bs-toggle="modal"
-                onclick="clearForm();"
+                onclick="clearForm('Добавить счет');"
                 type="button">
             Добавить счёт
         </button>
@@ -55,7 +55,7 @@
                     <!-- Кнопка Редактировать -->
                     <button class="btn btn-sm btn-warning me-1" data-bs-target="#accountModal"
                             data-bs-toggle="modal"
-                            onclick="editAccount(this)"
+                            onclick="editModalForm(this, '/account/fragments/account_edit_modal','Редактировать счет', true)"
                             th:attr="data-id=${account.id},
                                      data-date-start=${#dates.format(account.dateStart, 'yyyy-MM-dd')},
                                      data-date-end=${#dates.format(account.dateEnd, 'yyyy-MM-dd')},

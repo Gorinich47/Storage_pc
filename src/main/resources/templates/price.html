@@ -9,7 +9,7 @@
         <!-- Кнопка открытия формы добавления -->
         <button class="btn btn-primary mb-3" data-bs-target="#addPriceModal"
                 data-bs-toggle="modal"
-                onclick="clearForm()"
+                onclick="clearForm('Добавить тариф')"
                 type="button">
             Добавить новый тариф
         </button>
@@ -38,7 +38,7 @@
                 <td>
                     <button class="btn btn-sm btn-warning" data-bs-target="#addPriceModal"
                             data-bs-toggle="modal"
-                            onclick="editPrice(this)"
+                            onclick="editModalForm(this, '/price/fragments/price_edit_modal', 'Редактировать тариф')"
                             th:attr="data-id=${curPrice.id},
                                      data-box-id=${curPrice.box.id},
                                      data-sum_price=${curPrice.sumPrice},
@@ -68,48 +68,9 @@
              tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form method="post" th:action="@{/price/save}" th:object="${newPrice}">
-                        <input id="priceId" name="priceId" th:field="*{id}" type="hidden"/>
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addPriceModalLabel">Тариф</h5>
-                            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal"
-                                    type="button"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label" for="boxId">Бокс:</label>
-                                <select class="form-select" id="boxId" name="boxId" required th:field="*{box}">
-                                    <option value="">Выберите бокс</option>
-                                    <option th:each="box : ${allboxes}" th:text="${box.idBox}"
-                                            th:value="${box.id}"></option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="sum_price">Цена (₽):</label>
-                                <input class="form-control" id="sum_price" name="sum_price" placeholder="Введите цену"
-                                       required step="0.01" th:field="*{sumPrice}" type="number"/>
-                                <div class="text-danger" th:if="${#fields.hasErrors('sumPrice')}">
-                                    <small th:errors="*{sum_price}"></small>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="dateStart">Дата начала действия:</label>
-                                <input class="form-control" id="dateStart" name="dateStart" required
-                                       th:field="*{dateStart}" type="date"/>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="dateEnd">Дата окончания действия:</label>
-                                <input class="form-control" id="dateEnd" name="dateEnd" th:field="*{dateEnd}"
-                                       type="date"/>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearForm()"
-                                    type="button">Отмена
-                            </button>
-                            <button class="btn btn-primary" type="submit">Сохранить</button>
-                        </div>
-                    </form>
+                    <div class="container">
+                        <div id="content-modal-form-id" th:insert="~{price_edit_modal :: content_modal_form}"></div>
+                    </div>
                 </div>
             </div>
         </div>
