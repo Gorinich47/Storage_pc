@@ -252,18 +252,6 @@ public class ClientController {
         return "redirect:/employee";
     }
 
-    // Сохранение клиента
-    @PostMapping("/person/save")
-    public String savePerson(@ModelAttribute Person person) {
-        if (person instanceof Client) {
-            clientRepository.save((Client) person);
-        } else if (person instanceof Employee) {
-            employeeRepository.save((Employee) person);
-        }
-        return "redirect:/client";
-    }
-
-
     // Страница тарифы
     @GetMapping("/price")
     public String listPrices(Model model) {
