@@ -174,7 +174,6 @@ public class ClientController {
             @RequestParam(value = "boxIds", required = false) Integer[] boxIds) {
 
         account.setBox(boxRepository.findByIdIn(List.of(boxIds)));
-
         accountRepository.save(account);
         return "redirect:/account"; // /list?openTab=account";
     }
