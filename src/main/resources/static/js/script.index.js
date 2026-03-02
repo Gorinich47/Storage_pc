@@ -4,7 +4,7 @@ function clearForm(textLabelForm=''){
     const form = document.getElementById('edit_modal_form');
      form.querySelectorAll('input').forEach(input => input.value = '');
      form.querySelectorAll('select').forEach(select => select.selectedIndex= 0);
-     form.querySelectorAll('.form-check-input').forEach(check=> check.checked = false);
+     form.querySelectorAll('.form-check-input').forEach(check=> check.value = false);
      updateSelectedCount_account();
       if(textLabelForm!=''){
          document.getElementById('objectModalLabel').textContent = textLabelForm;
@@ -157,4 +157,27 @@ function setCheckedBoxes_account() {
     } catch (e) {
         console.error('Error parsing boxes-edit value:', e);
     }
+}
+
+async function saveRandomClient() {
+
+    try {
+        const response = await fetch('/client/random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
+
+        if (response.ok) {
+            // Перезагружаем страницу после успешного создания
+            window.location.href = '/client';
+        } else {
+            alert('Ошибка при создании клиента');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Произошла ошибка при создании клиента');
+    }
+
 }

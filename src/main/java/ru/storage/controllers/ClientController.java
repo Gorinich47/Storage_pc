@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.*;
 import ru.storage.repo.*;
 import ru.storage.services.BoxService;
+import ru.storage.services.DemoService;
 import ru.storage.services.GeneralService;
 
 import javax.validation.Valid;
@@ -36,11 +37,17 @@ public class ClientController {
     private PriceRepository priceRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private SheduleRepository sheduleRepository;
+    @Autowired
+    private MovementRepository movementRepository;
 
     @Autowired
     private GeneralService generalService;
     @Autowired
     private BoxService boxService;
+    //@Autowired
+    //private DemoService demoService;
 
     // Главная страница
     @GetMapping("/")
@@ -71,9 +78,10 @@ public class ClientController {
         model.addAttribute("search", searchAll);
 
         // Данные для форм
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Box());
+        model.addAttribute("saveUrl", "/box/save");
 
         return "index";
     }
@@ -130,6 +138,7 @@ public class ClientController {
     @GetMapping("/box/fragments/box_edit_modal")
     public String getBoxEditModal(Model model, @RequestParam Integer id) {
         model.addAttribute("object", boxRepository.findById(id).get());
+        model.addAttribute("saveUrl", "/box/save");
         //model.addAttribute("box", new Box());
         return "box_edit_modal :: content_modal_form";
     }
@@ -143,9 +152,10 @@ public class ClientController {
         model.addAttribute("accounts", accountRepository.findAll());
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
         model.addAttribute("curboxes", new ArrayList<Box>());
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Account()); // для формы
+        model.addAttribute("saveUrl", "/account/save");
         model.addAttribute("openAccountModal", 1001);
         return "index";
     }
@@ -160,8 +170,8 @@ public class ClientController {
         } else {
             account = new Account();
         }
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", account); // для формы
         model.addAttribute("curboxes", boxes);
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
@@ -195,6 +205,7 @@ public class ClientController {
         model.addAttribute("content", "client");
         model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Client());
+        model.addAttribute("saveUrl", "/client/save");
         return "index";
         //return "redirect:/client/list";
     }
@@ -222,13 +233,24 @@ public class ClientController {
         return "redirect:/client";
     }
 
+    @PostMapping("/client/random")
+    public String getRandomClient() {
+
+        for (int i = 0; i < 10; i++) {
+            Client randomClient = DemoService.FIO.randomClient();
+            clientRepository.save(randomClient);
+        }
+
+        return "redirect:/client";
+    }
 
     // Страница сотрудники
     @GetMapping("/employee")
     public String listEmployees(Model model) {
         model.addAttribute("content", "employee");
-        model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Employee());
+        model.addAttribute("saveUrl", "/employee/save");
         return "index";
     }
 
@@ -262,6 +284,7 @@ public class ClientController {
         model.addAttribute("prices", priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc());
         model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
         model.addAttribute("object", new Price());
+        model.addAttribute("saveUrl", "/price/save");
         return "index";
     }
 
@@ -292,5 +315,43 @@ public class ClientController {
         return "redirect:/price";
     }
 
+
+    // Страница журнал сотрудников
+    @GetMapping("/shedule")
+    public String listShedule(Model model) {
+        model.addAttribute("content", "shedule");
+        model.addAttribute("shedules", sheduleRepository.findAllByOrderByEmployeeAscDateStartAscDateEndAsc());
+        model.addAttribute("allEmployees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("object", new Shedule());
+        model.addAttribute("saveUrl", "/shedule/save");
+        return "index";
+    }
+
+    // форма изменения/добавления данных о боксе
+    @GetMapping("/shedule/fragments/shedule_edit_modal")
+    public String getSheduleEditModal(Model model, @RequestParam Long id) {
+        model.addAttribute("object", sheduleRepository.findById(id).get());
+        model.addAttribute("saveUrl", "/shedule/save");
+        model.addAttribute("allEmployees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+
+        return "shedule_edit_modal :: content_modal_form";
+    }
+
+    // сохранить тариф
+    @PostMapping("/shedule/save")
+    public String saveShedule(@Valid @ModelAttribute Shedule object,
+                              BindingResult result,
+                              Model model) {
+        sheduleRepository.save(object);
+
+        return "redirect:/shedule";
+    }
+
+    // Удалить тариф
+    @GetMapping("/shedule/delete")
+    public String deleteShedule(@RequestParam Long id) {
+        sheduleRepository.deleteById(id);
+        return "redirect:/shedule";
+    }
 
 }

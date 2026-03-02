@@ -7,7 +7,8 @@
         <h2>Список тарифов на боксы</h2>
 
         <!-- Кнопка открытия формы добавления -->
-        <button class="btn btn-primary mb-3" data-bs-target="#addPriceModal"
+        <button class="btn btn-primary mb-3"
+                data-bs-target="#addPriceModal"
                 data-bs-toggle="modal"
                 onclick="clearForm('Добавить тариф')"
                 type="button">
@@ -36,7 +37,8 @@
                 <td th:text="${#dates.format(curPrice.dateEnd, 'dd.MM.yyyy')}"></td>
                 <td th:text="${@generalService.format(curPrice.dateEdit, false)}"></td>
                 <td>
-                    <button class="btn btn-sm btn-warning" data-bs-target="#addPriceModal"
+                    <button class="btn btn-sm btn-warning"
+                            data-bs-target="#addPriceModal"
                             data-bs-toggle="modal"
                             onclick="editModalForm(this, '/price/fragments/price_edit_modal', 'Редактировать тариф')"
                             th:attr="data-id=${curPrice.id},
@@ -48,7 +50,8 @@
                         Редактировать
                     </button>
                     <!-- Кнопка Удалить -->
-                    <button class="btn btn-sm btn-danger" data-bs-target="#deleteConfirmModal"
+                    <button class="btn btn-sm btn-danger"
+                            data-bs-target="#deleteConfirmModal"
                             data-bs-toggle="modal"
                             onclick="setDeleteId(this)"
                             th:attr="data-id=${curPrice.id},
@@ -75,7 +78,10 @@
             </div>
         </div>
         <!-- Модальное окно подтверждения удаления -->
-        <div aria-hidden="true" aria-labelledby="deleteConfirmModalLabel" class="modal fade" id="deleteConfirmModal"
+        <div aria-hidden="true"
+             aria-labelledby="deleteConfirmModalLabel"
+             class="modal fade"
+             id="deleteConfirmModal"
              tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">

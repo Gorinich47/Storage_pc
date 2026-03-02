@@ -4,7 +4,7 @@
 
     <form id="edit_modal_form"
           method="post"
-          th:action="@{/box/save}"
+          th:action="@{${saveUrl}}"
           th:object="${object}">
 
     <!--      <div th:with="clients=${multyObject.clients}, employees=${multyObject.employees}, boxes=${multyObject.boxes}">-->

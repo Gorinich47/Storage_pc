@@ -53,7 +53,8 @@
                 <td th:text="${account.sumAmount}"></td>
                 <td>
                     <!-- Кнопка Редактировать -->
-                    <button class="btn btn-sm btn-warning me-1" data-bs-target="#accountModal"
+                    <button class="btn btn-sm btn-warning me-1"
+                            data-bs-target="#accountModal"
                             data-bs-toggle="modal"
                             onclick="editModalForm(this, '/account/fragments/account_edit_modal','Редактировать счет', true)"
                             th:attr="data-id=${account.id},

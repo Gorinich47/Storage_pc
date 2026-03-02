@@ -4,13 +4,22 @@
         <h2>Список клинетов</h2>
 
         <!-- Кнопка открытия модальной формы добавления -->
-        <button class="btn btn-primary mb-3"
-                data-bs-target="#clientModal"
-                data-bs-toggle="modal"
-                onclick="clearForm('Добавить клиента');"
-                type="button">
-            Добавить клиента
-        </button>
+        <div class="mb-3">
+            <button class="btn btn-primary mb-3"
+                    data-bs-target="#clientModal"
+                    data-bs-toggle="modal"
+                    onclick="clearForm('Добавить клиента');"
+                    type="button">
+                Добавить клиента
+            </button>
+
+            <!-- Кнопка генерации случайного клиента -->
+            <button class="btn btn-success mb-3"
+                    onclick="saveRandomClient()"
+                    type="button">
+                Сгенерировать
+            </button>
+        </div>
 
         <table class="table table-striped table-hover">
             <thead class="table-dark">

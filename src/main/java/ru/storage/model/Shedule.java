@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "shedules")
@@ -16,11 +17,13 @@ public class Shedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date date;
-    private Date dateStart;
-    private Date dateEnd;
+    @UpdateTimestamp
+    @Column(name = "date_edit", nullable = false)
+    private LocalDateTime date;
+    private LocalDateTime dateStart;
+    private LocalDateTime dateEnd;
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false, unique = true, updatable = false)
+    @JoinColumn(name = "employee_id", nullable = false, unique = false, updatable = false)
     private Employee employee;
-    private boolean isHoliday;
+    private Boolean isHoliday;
 }
