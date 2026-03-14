@@ -201,11 +201,30 @@ public class ClientController {
 
     // Страница клиенты
     @GetMapping("/client")
-    public String getAllPersons(Model model) {
+    public String getAllPersons(Model model,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "7") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("firstName"), Sort.Order.asc("lastName")).ascending());
+
+        Page<Client> clientPage = clientRepository.findAll(pageable);
+
         model.addAttribute("content", "client");
-        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        //model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Client());
         model.addAttribute("saveUrl", "/client/save");
+        // Список с пагинацией и сортировкой
+        model.addAttribute("clientPage", clientPage);
+        model.addAttribute("clients", clientPage.getContent());
+        model.addAttribute("currentPage", clientPage.getNumber());
+        model.addAttribute("totalPages", clientPage.getTotalPages());
+        model.addAttribute("totalElements", clientPage.getTotalElements());
+        model.addAttribute("size", size);
+
+
+
+
+
         return "index";
         //return "redirect:/client/list";
     }
