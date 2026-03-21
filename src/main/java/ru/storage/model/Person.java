@@ -7,10 +7,12 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Date;
 
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
@@ -25,8 +27,7 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //    public Person(){
-//    }
+
     public Person(String firstName, String lastName, Date birthDate, String phoneNumber, String emailAddress, String address) {
         this.firstName = firstName;
         this.lastName = lastName;

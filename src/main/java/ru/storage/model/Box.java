@@ -2,15 +2,18 @@ package ru.storage.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
+import ru.storage.enums.Entrance;
 
 import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "box")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 /* фиксированный субъект, количество и свойства не должны меняться */

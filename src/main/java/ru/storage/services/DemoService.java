@@ -174,7 +174,7 @@ public class DemoService {
                     "Жукова", "Кутузова", "Суворова", "Бауманская", "Новослободская",
                     "Профсоюзная", "Варшавское", "Ленинградский", "Юдина", "Кима",
                     "Комсомольский", "Щелковское", "Новая", "Первая", "Универсальная",
-                    "Центарльяная", "Крестьянская", "Загородная", "Зеленая", "Петра первого",
+                    "Центральная", "Крестьянская", "Загородная", "Зеленая", "Петра первого",
                     "Юбилейная", "Советская", "Кирова", "Шоссейная", "Болотная", "Грибоедова",
                     "Невский", "Смоленская", "Рязанская", "Новгородская", "Ярославская",
                     "Грибной", "Большое Село"
@@ -274,14 +274,15 @@ public class DemoService {
             String Email = randomEmail(fam, im);
             String Address = randomAddress();
 
-            Client client = new Client();
-            client.setFirstName(fam);
-            client.setLastName(im);
-            client.setBirthDate(dateOfBirth);
-            client.setPhoneNumber(phoneNumber);
-            client.setEmailAddress(Email);
-            client.setAddress(Address);
-            client.setComment("");
+            Client client = Client.builder()
+                    .firstName(fam)
+                    .lastName(im)
+                    .birthDate(dateOfBirth)
+                    .phoneNumber(phoneNumber)
+                    .emailAddress(Email)
+                    .address(Address)
+                    .comment("")
+                    .build();
 
             return client;
 

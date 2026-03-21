@@ -7,12 +7,15 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import ru.storage.enums.PostEmployee;
 
 import java.sql.Date;
 
 @Entity
 @Table(name = "employees")
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Employee extends Person {

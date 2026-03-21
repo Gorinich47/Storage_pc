@@ -5,12 +5,14 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "clients")
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Client extends Person {

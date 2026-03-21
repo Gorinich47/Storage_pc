@@ -2,15 +2,18 @@ package ru.storage.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import ru.storage.enums.TypeMovements;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movements")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Movement {

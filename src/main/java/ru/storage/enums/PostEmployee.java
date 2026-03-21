@@ -1,4 +1,4 @@
-package ru.storage.model;
+package ru.storage.enums;
 
 public enum PostEmployee {
     MANAGER("Управляющий"),
