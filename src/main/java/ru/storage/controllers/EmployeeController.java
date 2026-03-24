@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Employee;
-import ru.storage.repo.*;
-import ru.storage.services.BoxService;
-import ru.storage.services.ClientService;
 import ru.storage.services.EmployeeService;
 import ru.storage.services.GeneralService;
 
@@ -18,44 +15,15 @@ import ru.storage.services.GeneralService;
 //@RequestMapping("")
 public class EmployeeController {
 
-    private final AccountRepository accountRepository;
-    private final BoxRepository boxRepository;
 
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
-
-    private final BoxService boxService; /* service */
-    private final ClientService clientService;//
     private final EmployeeService employeeService;//
     private final GeneralService generalService;/* service */
 
     @Autowired
-    EmployeeController(AccountRepository accountRepository,
-                       BoxRepository boxRepository,
-                       ClientRepository clientRepository,
-                       EmployeeRepository employeeRepository,
-                       MovementRepository movementRepository,
-                       PriceRepository priceRepository,
-                       SheduleRepository sheduleRepository,
-                       BoxService boxService,
-                       ClientService clientService,
+    EmployeeController(
                        EmployeeService employeeService,//
                        GeneralService generalService) {
 
-        this.accountRepository = accountRepository;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
-
-        this.boxService = boxService;//
-        this.clientService = clientService;//
         this.employeeService = employeeService;//
         this.generalService = generalService;
 
@@ -65,7 +33,7 @@ public class EmployeeController {
     @GetMapping("/employee")
     public String listEmployees(Model model) {
         model.addAttribute("content", "employee");
-        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Employee());
         model.addAttribute("saveUrl", "/employee/save");
         return "index";
@@ -74,7 +42,7 @@ public class EmployeeController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/employee/fragments/client_edit_modal")
     public String getEmployeetEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("object", employeeRepository.findById(id).get());
+        model.addAttribute("object", employeeService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/employee/save");
         //model.addAttribute("client", new Client());
         return "client_edit_modal :: content_modal_form";
@@ -83,14 +51,14 @@ public class EmployeeController {
     // сохранение сотрудника
     @PostMapping("/employee/save")
     public String saveEmployee(@ModelAttribute Employee object) {
-        employeeRepository.save(object);
+        employeeService.save(object);
         return "redirect:/employee"; //list?openTab=employee";
     }
 
     // Удаление сотрудникa
     @GetMapping("/employee/delete")
     public String deleteEmployee(@RequestParam Long id) {
-        employeeRepository.deleteById(id);
+        employeeService.delete(id);
         return "redirect:/employee";
     }
 

@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Price;
-import ru.storage.repo.*;
-import ru.storage.services.BoxService;
-import ru.storage.services.ClientService;
-import ru.storage.services.EmployeeService;
-import ru.storage.services.GeneralService;
+import ru.storage.services.*;
 
 import javax.validation.Valid;
 
@@ -21,15 +17,8 @@ import javax.validation.Valid;
 //@RequestMapping("")
 public class PriceController {
 
-    private final AccountRepository accountRepository;
-    private final BoxRepository boxRepository;
 
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
+    private final PriceService priceService;
 
     private final BoxService boxService; /* service */
     private final ClientService clientService;//
@@ -37,25 +26,13 @@ public class PriceController {
     private final GeneralService generalService;/* service */
 
     @Autowired
-    PriceController(AccountRepository accountRepository,
-                    BoxRepository boxRepository,
-                    ClientRepository clientRepository,
-                    EmployeeRepository employeeRepository,
-                    MovementRepository movementRepository,
-                    PriceRepository priceRepository,
-                    SheduleRepository sheduleRepository,
+    PriceController(PriceService priceService,
                     BoxService boxService,
                     ClientService clientService,
                     EmployeeService employeeService,//
                     GeneralService generalService) {
 
-        this.accountRepository = accountRepository;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
+        this.priceService = priceService;
 
         this.boxService = boxService;//
         this.clientService = clientService;//
@@ -68,8 +45,8 @@ public class PriceController {
     @GetMapping("/price")
     public String listPrices(Model model) {
         model.addAttribute("content", "price");
-        model.addAttribute("prices", priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc());
-        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        model.addAttribute("prices", priceService.getAll());
+        model.addAttribute("allboxes", boxService.getAll());
         model.addAttribute("object", new Price());
         model.addAttribute("saveUrl", "/price/save");
         return "index";
@@ -78,9 +55,9 @@ public class PriceController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/price/fragments/price_edit_modal")
     public String getPriceEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("object", priceRepository.findById(id).get());
+        model.addAttribute("object", priceService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/price/save");
-        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        model.addAttribute("allboxes", boxService.getAll());
         //model.addAttribute("client", new Client());
         return "price_edit_modal :: content_modal_form";
     }
@@ -90,7 +67,7 @@ public class PriceController {
     public String savePrice(@Valid @ModelAttribute Price object,
                             BindingResult result,
                             Model model) {
-        priceRepository.save(object);
+        priceService.save(object);
 
         return "redirect:/price";
     }
@@ -98,7 +75,7 @@ public class PriceController {
     // Удалить тариф
     @GetMapping("/price/delete")
     public String deletePrice(@RequestParam Long id) {
-        priceRepository.deleteById(id);
+        priceService.delete(id);
         return "redirect:/price";
     }
 }

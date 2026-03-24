@@ -9,11 +9,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Shedule;
-import ru.storage.repo.*;
-import ru.storage.services.BoxService;
-import ru.storage.services.ClientService;
 import ru.storage.services.EmployeeService;
 import ru.storage.services.GeneralService;
+import ru.storage.services.SheduleService;
 
 import javax.validation.Valid;
 
@@ -21,46 +19,19 @@ import javax.validation.Valid;
 //@RequestMapping("")
 public class SheduleController {
 
-    private final AccountRepository accountRepository;
-    private final BoxRepository boxRepository;
 
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
-
-    private final BoxService boxService; /* service */
-    private final ClientService clientService;//
+    private final SheduleService sheduleService;
     private final EmployeeService employeeService;//
     private final GeneralService generalService;/* service */
 
     @Autowired
-    SheduleController(AccountRepository accountRepository,
-                      BoxRepository boxRepository,
-                      ClientRepository clientRepository,
-                      EmployeeRepository employeeRepository,
-                      MovementRepository movementRepository,
-                      PriceRepository priceRepository,
-                      SheduleRepository sheduleRepository,
-                      BoxService boxService,
-                      ClientService clientService,
-                      EmployeeService employeeService,//
-                      GeneralService generalService) {
+    SheduleController(EmployeeService employeeService,
+                      GeneralService generalService,
+                      SheduleService sheduleService) {
 
-        this.accountRepository = accountRepository;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
-
-        this.boxService = boxService;//
-        this.clientService = clientService;//
         this.employeeService = employeeService;//
         this.generalService = generalService;
+        this.sheduleService = sheduleService;
 
     }
 
@@ -68,8 +39,8 @@ public class SheduleController {
     @GetMapping("/shedule")
     public String listShedule(Model model) {
         model.addAttribute("content", "shedule");
-        model.addAttribute("shedules", sheduleRepository.findAllByOrderByEmployeeAscDateStartAscDateEndAsc());
-        model.addAttribute("allEmployees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("shedules", sheduleService.getAll());
+        model.addAttribute("allEmployees", employeeService.getAll());
         model.addAttribute("object", new Shedule());
         model.addAttribute("saveUrl", "/shedule/save");
         return "index";
@@ -78,9 +49,9 @@ public class SheduleController {
     // форма изменения/добавления данных о боксе
     @GetMapping("/shedule/fragments/shedule_edit_modal")
     public String getSheduleEditModal(Model model, @RequestParam Long id) {
-        model.addAttribute("object", sheduleRepository.findById(id).get());
+        model.addAttribute("object", sheduleService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/shedule/save");
-        model.addAttribute("allEmployees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("allEmployees", employeeService.getAll());
 
         return "shedule_edit_modal :: content_modal_form";
     }
@@ -90,7 +61,7 @@ public class SheduleController {
     public String saveShedule(@Valid @ModelAttribute Shedule object,
                               BindingResult result,
                               Model model) {
-        sheduleRepository.save(object);
+        sheduleService.save(object);
 
         return "redirect:/shedule";
     }
@@ -98,7 +69,7 @@ public class SheduleController {
     // Удалить тариф
     @GetMapping("/shedule/delete")
     public String deleteShedule(@RequestParam Long id) {
-        sheduleRepository.deleteById(id);
+        sheduleService.delete(id);
         return "redirect:/shedule";
     }
 }

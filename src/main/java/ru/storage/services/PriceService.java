@@ -1,0 +1,32 @@
+package ru.storage.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.storage.model.Price;
+import ru.storage.repo.PriceRepository;
+
+import java.util.List;
+
+@Service
+//@RequiredArgsConstructor
+public class PriceService extends BaseService<Price, PriceRepository> {
+
+    private final PriceRepository priceRepository;
+
+    @Autowired
+    PriceService(PriceRepository priceRepository) {
+        super(priceRepository);
+        this.priceRepository = priceRepository;
+    }
+
+    @Override
+    protected Price newEntity() {
+        return new Price();
+    }
+
+    @Override
+    public List<Price> getAll() {
+        return priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc();
+    }
+
+}

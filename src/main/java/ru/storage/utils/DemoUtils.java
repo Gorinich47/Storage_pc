@@ -1,6 +1,5 @@
-package ru.storage.services;
+package ru.storage.utils;
 
-import org.springframework.stereotype.Service;
 import ru.storage.model.Client;
 
 import java.sql.Date;
@@ -10,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-@Service
-public class DemoService {
+
+public class DemoUtils {
 
     static public class FIO {
 

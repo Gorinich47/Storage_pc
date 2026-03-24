@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
 import ru.storage.repo.*;
-import ru.storage.services.BoxService;
-import ru.storage.services.ClientService;
-import ru.storage.services.EmployeeService;
-import ru.storage.services.GeneralService;
+import ru.storage.services.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.List;
 //@RequestMapping("")
 public class AccountController {
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final BoxRepository boxRepository;
 
     private final ClientRepository clientRepository;
@@ -38,7 +35,7 @@ public class AccountController {
     private final GeneralService generalService;/* service */
 
     @Autowired
-    AccountController(AccountRepository accountRepository,
+    AccountController(AccountService accountService,
                       BoxRepository boxRepository,
                       ClientRepository clientRepository,
                       EmployeeRepository employeeRepository,
@@ -50,7 +47,7 @@ public class AccountController {
                       EmployeeService employeeService,//
                       GeneralService generalService) {
 
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
         this.boxRepository = boxRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
@@ -70,11 +67,11 @@ public class AccountController {
     public String listAccounts(Model model) {
 
         model.addAttribute("content", "account");
-        model.addAttribute("accounts", accountRepository.findAll());
-        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        model.addAttribute("accounts", accountService.getAll());
+        model.addAttribute("allboxes", boxService.getAll());
         model.addAttribute("curboxes", new ArrayList<Box>());
-        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
-        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
         model.addAttribute("saveUrl", "/account/save");
         model.addAttribute("openAccountModal", 1001);
@@ -84,18 +81,14 @@ public class AccountController {
     // форма редактирования счета
     @GetMapping("/account/fragments/account_edit_modal")
     public String getAccountEditModal(Model model, @RequestParam Long id) {
-        List<Box> boxes = new ArrayList<Box>();
-        Account account = accountRepository.findById(id).orElse(null);
-        if (account != null) {
-            boxes = account.getBox();
-        } else {
-            account = new Account();
-        }
-        model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
-        model.addAttribute("employees", employeeRepository.findAllByOrderByFirstNameAscLastNameAsc());
+
+        Account account = accountService.getByIdOrNew(id);
+
+        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", account); // для формы
-        model.addAttribute("curboxes", boxes);
-        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
+        model.addAttribute("curboxes", account.getBox());
+        model.addAttribute("allboxes", boxService.getAll());
         model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";
@@ -105,17 +98,17 @@ public class AccountController {
     @PostMapping("/account/save")
     public String saveAccount(
             @ModelAttribute Account object,
-            @RequestParam(value = "boxIds", required = false) Integer[] boxIds) {
+            @RequestParam(value = "boxIds", required = false) Long[] boxIds) {
 
-        object.setBox(boxRepository.findByIdIn(List.of(boxIds)));
-        accountRepository.save(object);
+        accountService.save(object, List.of(boxIds));
+
         return "redirect:/account"; // /list?openTab=account";
     }
 
     // Удаление счета
     @GetMapping("/account/delete")
     public String deleteAccount(@RequestParam Long id) {
-        accountRepository.deleteById(id);
+        accountService.delete(id);
         return "redirect:/account";
     }
 

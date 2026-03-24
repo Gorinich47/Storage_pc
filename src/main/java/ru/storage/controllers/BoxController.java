@@ -9,86 +9,45 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
-import ru.storage.repo.*;
-import ru.storage.services.BoxService;
-import ru.storage.services.ClientService;
-import ru.storage.services.EmployeeService;
-import ru.storage.services.GeneralService;
-
-import java.util.List;
+import ru.storage.services.*;
 
 @Controller
 //@RequestMapping("")
 public class BoxController {
 
-    private final AccountRepository accountRepository;
-    private final BoxRepository boxRepository;
-
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
-
+    private final AccountService accountService;//
     private final BoxService boxService; /* service */
     private final ClientService clientService;//
     private final EmployeeService employeeService;//
     private final GeneralService generalService;/* service */
 
     @Autowired
-    BoxController(AccountRepository accountRepository,
-                  BoxRepository boxRepository,
-                  ClientRepository clientRepository,
-                  EmployeeRepository employeeRepository,
-                  MovementRepository movementRepository,
-                  PriceRepository priceRepository,
-                  SheduleRepository sheduleRepository,
+    BoxController(AccountService accountService,
                   BoxService boxService,
                   ClientService clientService,
                   EmployeeService employeeService,//
                   GeneralService generalService) {
 
-        this.accountRepository = accountRepository;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
-
+        this.accountService = accountService;
         this.boxService = boxService;//
         this.clientService = clientService;//
         this.employeeService = employeeService;//
         this.generalService = generalService;
-
     }
 
     // Страница Боксы
-    // Сохранение бокса
-    @PostMapping("/box/save")
-    public String saveBox(@ModelAttribute Box object) {
-        boxRepository.save(object);
-        return "redirect:/";
-    }
 
-    // Удаление бокса
-    @GetMapping("/box/delete")
-    public String deleteBox(@RequestParam Integer id) {
-        boxRepository.deleteById(id);
-        return "redirect:/";
-    }
 
     // Аренда бокса или боксов
     @GetMapping("/box/rent")
-    public String rentBox(Model model, @RequestParam Integer id) {
-        List<Box> boxes = boxRepository.findByIdIn(List.of(id));
+    public String rentBox(Model model, @RequestParam Long id) {
+
         //boxRepository.deleteById(id);
         model.addAttribute("content", "account");
-        model.addAttribute("accounts", accountRepository.findAll());
-        model.addAttribute("boxes", boxes);
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("employees", employeeRepository.findAll());
+        model.addAttribute("accounts", accountService.getAll());
+        model.addAttribute("boxes", boxService.getByListId(id));
+        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
 
         // Добавляем параметр для открытия модального окна
@@ -99,13 +58,12 @@ public class BoxController {
     // Фрагменты Бокс
     // форма добавление счета (аренда)
     @GetMapping("/box/fragments/account_edit_modal")
-    public String getAccountEditModal(Model model, @RequestParam Integer id) {
-        List<Box> boxes = List.of(boxRepository.findById(id).get());
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("employees", employeeRepository.findAll());
+    public String getAccountEditModal(Model model, @RequestParam Long id) {
+        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
-        model.addAttribute("allboxes", boxRepository.findAllByOrderByIdBoxAsc());
-        model.addAttribute("curboxes", boxes);
+        model.addAttribute("allboxes", boxService.getAll());
+        model.addAttribute("curboxes", boxService.getByListId(id));
         model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";
@@ -113,11 +71,25 @@ public class BoxController {
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/box/fragments/box_edit_modal")
-    public String getBoxEditModal(Model model, @RequestParam Integer id) {
-        model.addAttribute("object", boxRepository.findById(id).get());
+    public String getBoxEditModal(Model model, @RequestParam Long id) {
+        model.addAttribute("object", boxService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/box/save");
         //model.addAttribute("box", new Box());
         return "box_edit_modal :: content_modal_form";
+    }
+
+    // Сохранение бокса
+    @PostMapping("/box/save")
+    public String saveBox(@ModelAttribute Box object) {
+        boxService.save(object);
+        return "redirect:/";
+    }
+
+    // Удаление бокса
+    @GetMapping("/box/delete")
+    public String deleteBox(@RequestParam Long id) {
+        boxService.delete(id);
+        return "redirect:/";
     }
 
 }

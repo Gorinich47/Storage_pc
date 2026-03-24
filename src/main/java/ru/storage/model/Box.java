@@ -20,7 +20,7 @@ import javax.validation.constraints.NotBlank;
 public class Box {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; /* числовой идентификатор*/
+    private Long id; /* числовой идентификатор*/
     @NotBlank
     private String idBox; /* символьное обозначение бокса*/
     /* общие параметры */

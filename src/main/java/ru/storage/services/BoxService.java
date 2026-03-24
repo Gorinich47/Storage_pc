@@ -15,20 +15,23 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 @Service
-public class BoxService {
-
-    //    List<Integer> getListId(List<Box> boxes){
-//        return boxes.stream().map(box -> box.getId()).collect(Collectors.toList());
-//    }
+//@RequiredArgsConstructor
+public class BoxService extends BaseService<Box, BoxRepository> {
 
     private final AccountRepository accountRepository;
     private final BoxRepository boxRepository;
 
     @Autowired
     BoxService(AccountRepository accountRepository, BoxRepository boxRepository) {
+        super(boxRepository);
         this.accountRepository = accountRepository;
         this.boxRepository = boxRepository;
 
+    }
+
+    @Override
+    protected Box newEntity() {
+        return new Box();
     }
 
     public Page<Box> searchOrAll(int page, int size, String searchAll) {
@@ -44,8 +47,15 @@ public class BoxService {
         return boxPage;
     }
 
+    @Override
+    public List<Box> getAll() {
+        return boxRepository.findAllByOrderByIdBoxAsc();
+    }
+
     public String toJson(List<Box> boxes) {
-        List<Integer> listIds = boxes.stream().map(box -> box.getId()).toList();
+        List<Long> listIds = boxes.stream()
+                .map(box -> box.getId())
+                .toList();
         try {
             return listIds != null ? new ObjectMapper().writeValueAsString(listIds) : "[]";
         } catch (Exception e) {
@@ -54,7 +64,10 @@ public class BoxService {
     }
 
     public String toJson(Account account) {
-        List<String> listIds = account.getBox().stream().map(box -> box.getId().toString()).toList();
+        List<String> listIds = account.getBox()
+                .stream()
+                .map(box -> box.getId().toString())
+                .toList();
         try {
             return listIds != null ? new ObjectMapper().writeValueAsString(listIds) : "[]";
         } catch (Exception e) {
@@ -67,7 +80,10 @@ public class BoxService {
         if (account == null) {
             return "[]";
         } else {
-            List<String> listIds = account.getBox().stream().map(box -> box.getId().toString()).toList();
+            List<String> listIds = account.getBox()
+                    .stream()
+                    .map(box -> box.getId().toString())
+                    .toList();
             try {
                 return listIds != null ? new ObjectMapper().writeValueAsString(listIds) : "[]";
             } catch (Exception e) {
@@ -78,7 +94,11 @@ public class BoxService {
 
     public String getJsonId(Account account) {
 
-        return account.getBox() != null ? new tools.jackson.databind.ObjectMapper().writeValueAsString(account.getBox()) : "[]";
+        return (account.getBox() != null) ?
+                new tools.jackson.databind
+                        .ObjectMapper()
+                        .writeValueAsString(account.getBox())
+                : "[]";
 
     }
 

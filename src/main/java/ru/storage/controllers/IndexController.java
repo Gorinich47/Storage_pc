@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Box;
-import ru.storage.repo.*;
 import ru.storage.services.BoxService;
 import ru.storage.services.ClientService;
 import ru.storage.services.EmployeeService;
@@ -18,41 +17,17 @@ import ru.storage.services.GeneralService;
 @RequestMapping("/")
 public class IndexController {
 
-    private final AccountRepository accountRepository;
-    private final BoxRepository boxRepository;
-
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
-
     private final BoxService boxService; /* service */
     private final ClientService clientService;//
     private final EmployeeService employeeService;//
     private final GeneralService generalService;/* service */
 
     @Autowired
-    IndexController(AccountRepository accountRepository,
-                    BoxRepository boxRepository,
-                    ClientRepository clientRepository,
-                    EmployeeRepository employeeRepository,
-                    MovementRepository movementRepository,
-                    PriceRepository priceRepository,
-                    SheduleRepository sheduleRepository,
+    IndexController(
                     BoxService boxService,
                     ClientService clientService,
                     EmployeeService employeeService,//
                     GeneralService generalService) {
-
-        this.accountRepository = accountRepository;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
 
         this.boxService = boxService;//
         this.clientService = clientService;//
