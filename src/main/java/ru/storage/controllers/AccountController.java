@@ -9,26 +9,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
-import ru.storage.repo.*;
 import ru.storage.services.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 //@RequestMapping("")
 public class AccountController {
 
     private final AccountService accountService;
-    private final BoxRepository boxRepository;
-
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-
-    private final MovementRepository movementRepository;
-    private final PriceRepository priceRepository;
-    private final SheduleRepository sheduleRepository;
-
     private final BoxService boxService; /* service */
     private final ClientService clientService;//
     private final EmployeeService employeeService;//
@@ -36,30 +25,17 @@ public class AccountController {
 
     @Autowired
     AccountController(AccountService accountService,
-                      BoxRepository boxRepository,
-                      ClientRepository clientRepository,
-                      EmployeeRepository employeeRepository,
-                      MovementRepository movementRepository,
-                      PriceRepository priceRepository,
-                      SheduleRepository sheduleRepository,
                       BoxService boxService,
                       ClientService clientService,
                       EmployeeService employeeService,//
-                      GeneralService generalService) {
+                      GeneralService generalService
+    ) {
 
         this.accountService = accountService;
-        this.boxRepository = boxRepository;
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.movementRepository = movementRepository;
-        this.priceRepository = priceRepository;
-        this.sheduleRepository = sheduleRepository;
-
         this.boxService = boxService;//
         this.clientService = clientService;//
         this.employeeService = employeeService;//
         this.generalService = generalService;
-
     }
 
     // Страница счета
@@ -80,7 +56,7 @@ public class AccountController {
 
     // форма редактирования счета
     @GetMapping("/account/fragments/account_edit_modal")
-    public String getAccountEditModal(Model model, @RequestParam Long id) {
+    public String getAccountEditModal(Model model, @RequestParam(required = false) Long id) {
 
         Account account = accountService.getByIdOrNew(id);
 
@@ -100,7 +76,7 @@ public class AccountController {
             @ModelAttribute Account object,
             @RequestParam(value = "boxIds", required = false) Long[] boxIds) {
 
-        accountService.save(object, List.of(boxIds));
+        accountService.save(object, boxIds);
 
         return "redirect:/account"; // /list?openTab=account";
     }
@@ -108,7 +84,9 @@ public class AccountController {
     // Удаление счета
     @GetMapping("/account/delete")
     public String deleteAccount(@RequestParam Long id) {
-        accountService.delete(id);
+        if (id != null) {
+            accountService.delete(id);
+        } // иначе должно быть исключение MissingServletRequestParameterException()
         return "redirect:/account";
     }
 

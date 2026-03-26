@@ -27,11 +27,25 @@ public class AccountService extends BaseService<Account, AccountRepository> {
         return new Account();
     }
 
-    public void save(Account account, List<Long> boxIds) {
-        List<Box> boxList = boxService.getByListId(boxIds);
-        account.setBox(boxList);
+    public void save(Account account, Long[] boxIds) {
+        if (boxIds != null) {
+            List<Box> boxList = boxService.getByListId(List.of(boxIds));
+            account.setBox(boxList);
+        } else {
+            account.setBox(List.of());
+        }
         accountRepository.save(account);
     }
+
+//    public void save(Account account, Long boxId) {
+//        if (boxId!=null) {
+//            List<Box> boxList = boxService.getByListId(List.of(boxId));
+//            account.setBox(boxList);
+//        } else {
+//            account.setBox(List.of());
+//        }
+//        accountRepository.save(account);
+//    }
 
     @Override
     public Account getByIdOrNew(Long id) {

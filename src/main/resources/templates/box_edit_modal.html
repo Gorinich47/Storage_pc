@@ -46,23 +46,25 @@
                     <label class="form-label" for="data-entrance">Тип входа:</label>
                     <select class="form-select" id="data-entrance" th:field="*{entrance}">
                         <option value="">Выберите тип входа</option>
-                        <option th:each="entrance : ${T(ru.storage.model.Entrance).values()}"
+                        <option th:each="entrance : ${T(ru.storage.enums.Entrance).values()}"
                                 th:text="${entrance.title}" th:value="${entrance}">Entrance
                         </option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="data-is-warm" th:field="*{isWarm}" type="checkbox"/>
-                    <label class="form-check-label" for="data-is-warm">Отапливаемый</label>
-                </div>
-                <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="data-is-electricity" th:field="*{isElectricity}"
+                    <input class="form-check-input" id="data-iswarm" th:field="*{isWarm}"
                            type="checkbox"/>
-                    <label class="form-check-label" for="data-is-electricity">Электричество</label>
+                    <label class="form-check-label" for="data-iswarm">Отапливаемый</label>
                 </div>
                 <div class="col-md-6 mb-3 form-check">
-                    <input class="form-check-input" id="data-is-water" th:field="*{isWater}" type="checkbox"/>
-                    <label class="form-check-label" for="data-is-water">Вода</label>
+                    <input class="form-check-input" id="data-iselectricity" th:field="*{isElectricity}"
+                           type="checkbox"/>
+                    <label class="form-check-label" for="data-iselectricity">Электричество</label>
+                </div>
+                <div class="col-md-6 mb-3 form-check">
+                    <input class="form-check-input" id="data-iswater" th:field="*{isWater}"
+                           type="checkbox"/>
+                    <label class="form-check-label" for="data-iswater">Вода</label>
                 </div>
             </div>
         </div>

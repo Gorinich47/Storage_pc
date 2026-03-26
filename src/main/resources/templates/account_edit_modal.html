@@ -47,7 +47,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="data-status">Статус:</label>
                     <select class="form-select" id="data-status" required th:field="*{statusBox}">
-                        <option th:each="status : ${T(ru.storage.model.StatusBox).values()}"
+                        <option th:each="status : ${T(ru.storage.enums.StatusBox).values()}"
                                 th:text="${status.title}" th:value="${status}">Status
                         </option>
                     </select>
