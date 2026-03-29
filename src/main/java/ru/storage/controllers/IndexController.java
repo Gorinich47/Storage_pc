@@ -40,12 +40,12 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model,
                         @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "5") int size,
+                        @RequestParam(defaultValue = "6") int size,
                         @RequestParam(required = false) String searchAll) {
 
         Page<Box> boxPage = boxService.searchOrAll(page, size, searchAll);
 
-        model.addAttribute("content", "box");
+        model.addAttribute("content", "box_front");
         model.addAttribute("content_modal_form", "box_edit_modal");
 
         // Список с пагинацией и сортировкой

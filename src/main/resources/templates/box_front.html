@@ -1,0 +1,210 @@
+<div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+    <div class="container mt-4">
+        <h2>Боксы</h2>
+
+        <!-- Форма поиска -->
+        <form class="mb-4" method="get" th:action="@{/box}">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input class="form-control"
+                           name="search"
+                           placeholder="Поиск по ID бокса"
+                           th:value="${#strings.isEmpty(param.search) ? '' : param.search}"
+                           type="text"/>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">Найти</button>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-secondary w-100" th:href="@{/box}">Сбросить</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Кнопка добавления -->
+        <!--    <button class="btn btn-primary mb-3"-->
+        <!--            data-bs-target="#boxModal"-->
+        <!--            data-bs-toggle="modal"-->
+        <!--            onclick="clearForm('Добавить бокс');"-->
+        <!--            th:attr="data-id-context-form=1"-->
+        <!--            type="button">-->
+        <!--      Добавить бокс-->
+        <!--    </button>-->
+
+        <!-- Сетка боксов -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:each="box : ${boxes}">
+                <div class="card h-100">
+                    <!-- Статус свободен/занят -->
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge text-white"
+                              th:classappend="${box.isFree} ? 'bg-success' : 'bg-danger'">
+                            <span th:text="${box.isFree} ? 'Свободен' : 'Занят'"></span>
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Бокс <span th:text="${box.idBox}"></span></h5>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="small text-muted">Площадь</div>
+                                <div><strong th:text="${box.square}"></strong> м²</div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Цена</div>
+                                <div><strong
+                                        th:text="${#numbers.formatDecimal(box.price, 0, 'COMMA', 0, 'POINT')}"></strong>
+                                    ₽
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Длина × Ширина</div>
+                                <div><span th:text="${box.length}"></span> × <span th:text="${box.width}"></span> м
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Высота</div>
+                                <div><span th:text="${box.height}"></span> м</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-2">
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="small text-muted">Вход</div>
+                                <div th:text="${box.entrance.title}"></div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Отопление</div>
+                                <div>
+                                    <span th:classappend="${box.isWarm} ? 'text-success' : 'text-danger'"
+                                          th:text="${box.isWarm} ? 'Есть' : 'Нет'"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Электричество</div>
+                                <div>
+                                    <span th:classappend="${box.isElectricity} ? 'text-success' : 'text-danger'"
+                                          th:text="${box.isElectricity} ? 'Есть' : 'Нет'"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="small text-muted">Вода</div>
+                                <div>
+                                    <span th:classappend="${box.isWater} ? 'text-success' : 'text-danger'"
+                                          th:text="${box.isWater} ? 'Есть' : 'Нет'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-warning flex-fill"
+                                    data-bs-target="#boxModal"
+                                    data-bs-toggle="modal"
+                                    onclick="rentBoxId(this)"
+                                    th:attr="data-id=${box.id}, data-id-box=${box.idBox}, data-id-context-form=1"
+                                    type="button">
+                                Арендовать
+                            </button>
+
+                            <!--              <button class="btn btn-sm btn-info flex-fill"-->
+                            <!--                      data-bs-target="#boxModal"-->
+                            <!--                      data-bs-toggle="modal"-->
+                            <!--                      onclick="editModalForm(this, '/box/fragments/box_edit_modal', 'Редактировать бокс')"-->
+                            <!--                      th:attr="data-id=${box.id}"-->
+                            <!--                      type="button">-->
+                            <!--                Редактировать-->
+                            <!--              </button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сообщение о пустом списке -->
+        <div class="alert alert-info mt-4" th:if="${#lists.isEmpty(boxes)}">
+            Боксы не найдены.
+        </div>
+
+        <!-- Пагинация -->
+        <div class="mt-4" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <span class="page-link" th:if="${currentPage == 0}">Назад</span>
+                    <a class="page-link"
+                       th:href="@{/(search=${param.search}, page=${currentPage - 1}, size=${size})}"
+                       th:unless="${currentPage == 0}">Назад</a>
+                </li>
+
+                <li class="page-item"
+                    th:classappend="${i == currentPage} ? 'active'"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a class="page-link"
+                       th:href="@{/(search=${param.search}, page=${i}, size=${size})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <span class="page-link" th:if="${currentPage == totalPages - 1}">Вперёд</span>
+                    <a class="page-link"
+                       th:href="@{/(search=${param.search}, page=${currentPage + 1}, size=${size})}"
+                       th:unless="${currentPage == totalPages - 1}">Вперёд</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--   Модальное окно для бокса -->
+    <div aria-hidden="true"
+         aria-labelledby="boxModalLabel"
+         class="modal fade"
+         id="boxModal"
+         tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="container">
+                    <div id="content-modal-form-id" th:insert="~{box_edit_modal :: content_modal_form}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <!--  <div aria-hidden="true"-->
+    <!--       aria-labelledby="deleteConfirmModalLabel"-->
+    <!--       class="modal fade"-->
+    <!--       id="deleteConfirmModal"-->
+    <!--       tabindex="-1">-->
+    <!--    <div class="modal-dialog">-->
+    <!--      <div class="modal-content">-->
+    <!--        <div class="modal-header">-->
+    <!--          <h5 class="modal-title" id="deleteConfirmModalLabel">Подтвердите действие</h5>-->
+    <!--          <button aria-label="Закрыть"-->
+    <!--                  class="btn-close"-->
+    <!--                  data-bs-dismiss="modal"-->
+    <!--                  type="button"></button>-->
+    <!--        </div>-->
+    <!--        <div class="modal-body">-->
+    <!--          <a id="textFormQuestion"></a> <strong id="objectNameFormQuestion"></strong>?-->
+    <!--        </div>-->
+    <!--        <div class="modal-footer">-->
+    <!--          <button class="btn btn-secondary"-->
+    <!--                  data-bs-dismiss="modal"-->
+    <!--                  type="button">Отмена</button>-->
+    <!--          <a class="btn btn-danger"-->
+    <!--             id="confirmDeleteBtn">Удалить</a>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+</div>

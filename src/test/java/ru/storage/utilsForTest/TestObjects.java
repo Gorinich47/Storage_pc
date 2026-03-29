@@ -1,11 +1,13 @@
 package ru.storage.utilsForTest;
 
+import org.springframework.data.domain.Page;
 import ru.storage.enums.Entrance;
 import ru.storage.enums.PostEmployee;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
 import ru.storage.model.Client;
 import ru.storage.model.Employee;
+import ru.storage.utils.PageUtils;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -20,26 +22,56 @@ import java.util.List;
  */
 public class TestObjects {
 
-    private Box box1;
-    private Box box2;
-    private Client client1;
-    private Client client2;
-    private Employee employee1;
-    private Employee employee2;
+    private final Box box1;
+    private final Box box2;
+    private final Client client1;
+    private final Client client2;
+    private final Employee employee1;
+    private final Employee employee2;
     private final Account account;
+    private final Account account2;
     private final Account accountNew;
 
     private final List<Box> listBox;
     private final List<Client> listClient;
     private final List<Employee> listEmployee;
+    private final List<Account> listAccount;
+    private final Page<Box> pageBox;
 
     public TestObjects() {
 
-        Box box1 = Box.builder().id(1L).idBox("A100").entrance(Entrance.DOOR).build();
-        Box box2 = Box.builder().id(2L).idBox("A200").entrance(Entrance.DOOR).build();
+        box1 = Box.builder()
+                .id(1L)
+                .idBox("A100")
+                .square(25.0)
+                .length(5.0)
+                .width(5.0)
+                .height(3.0)
+                .entrance(Entrance.DOOR)
+                .isWarm(true)
+                .isElectricity(true)
+                .isWater(true)
+                //.isFree(true)
+                //.price(100.0)
+                .build();
+        box2 = Box.builder()
+                .id(2L)
+                .idBox("A200")
+                .square(50)
+                .length(10)
+                .width(5)
+                .height(3)
+                .entrance(Entrance.DOOR)
+                .isWarm(true)
+                .isElectricity(true)
+                .isWater(true)
+                .isFree(true)
+                .price(200.0)
+                .build();
         listBox = Arrays.asList(box1, box2);
+        pageBox = new PageUtils<Box>().createPage(listBox);
 
-        Client client1 = Client.builder()
+        client1 = Client.builder()
                 .id(1L)
                 .firstName("Иван")
                 .lastName("Петров")
@@ -50,7 +82,7 @@ public class TestObjects {
                 .comment("заметка")
                 .build();
 
-        Client client2 = Client.builder()
+        client2 = Client.builder()
                 .id(2L)
                 .firstName("Василий")
                 .lastName("Попов")
@@ -63,7 +95,7 @@ public class TestObjects {
 
         listClient = Arrays.asList(client1, client2);
 
-        Employee employee1 = Employee.builder()
+        employee1 = Employee.builder()
                 .id(1L)
                 .postEmployee(PostEmployee.MANAGER)
                 .dateStart(Date.valueOf("2026-01-01"))
@@ -76,7 +108,7 @@ public class TestObjects {
                 .emailAddress("test3@mail.ru")
                 .address("г. Москва")
                 .build();
-        Employee employee2 = Employee.builder()
+        employee2 = Employee.builder()
                 .id(2L)
                 .postEmployee(PostEmployee.WORKER)
                 .dateStart(Date.valueOf("2026-01-01"))
@@ -102,11 +134,23 @@ public class TestObjects {
                 .employee(employee2)
                 .build();
 
+        account2 = Account.builder()
+                .id(2L)
+                .date(LocalDateTime.of(2025, 1, 1, 12, 0, 1))
+                .dateStart(Date.valueOf("2025-01-01"))
+                .dateEnd(Date.valueOf("2025-12-01"))
+                .box(listBox)
+                .client(client2)
+                .employee(employee2)
+                .build();
+
         accountNew = Account.builder()
                 .box(List.of()) // Пустой список боксов
                 .client(new Client())     // Пустой клиент для th:field или th:value
                 .employee(new Employee()) // Пустой сотрудник
                 .build();
+
+        listAccount = List.of(account, account2);
     }
 
     public Box getBox1() {
@@ -137,10 +181,17 @@ public class TestObjects {
         return account;
     }
 
+    public Account getAccount2() {
+        return account2;
+    }
+
     public Account getAccountNew() {
         return accountNew;
     }
 
+    public List<Account> getListAccount() {
+        return listAccount;
+    }
     public List<Box> getListBox() {
         return listBox;
     }
@@ -153,4 +204,7 @@ public class TestObjects {
         return listEmployee;
     }
 
+    public Page<Box> getPageBox() {
+        return pageBox;
+    }
 }

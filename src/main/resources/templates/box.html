@@ -135,17 +135,19 @@
             <ul class="pagination">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <span class="page-link" th:if="${currentPage == 0}">Назад</span>
-                    <a class="page-link" th:href="@{/(search=${param.search}, page=${currentPage - 1}, size=${size})}"
+                    <a class="page-link"
+                       th:href="@{/box(search=${param.search}, page=${currentPage - 1}, size=${size})}"
                        th:unless="${currentPage == 0}">Назад</a>
                 </li>
                 <li class="page-item" th:classappend="${i == currentPage} ? 'active'"
                     th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <a class="page-link" th:href="@{/(search=${param.search}, page=${i}, size=${size})}"
+                    <a class="page-link" th:href="@{/box(search=${param.search}, page=${i}, size=${size})}"
                        th:text="${i + 1}">1</a>
                 </li>
                 <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                     <span class="page-link" th:if="${currentPage == totalPages - 1}">Вперёд</span>
-                    <a class="page-link" th:href="@{/(search=${param.search}, page=${currentPage + 1}, size=${size})}"
+                    <a class="page-link"
+                       th:href="@{/box(search=${param.search}, page=${currentPage + 1}, size=${size})}"
                        th:unless="${currentPage == totalPages - 1}">Вперёд</a>
                 </li>
             </ul>

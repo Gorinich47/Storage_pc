@@ -1,12 +1,10 @@
 package ru.storage.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
 import ru.storage.services.*;
@@ -36,7 +34,34 @@ public class BoxController {
     }
 
     // Страница Боксы
+    @GetMapping("/box")
+    public String index(Model model,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "5") int size,
+                        @RequestParam(required = false) String searchAll) {
 
+        Page<Box> boxPage = boxService.searchOrAll(page, size, searchAll);
+
+        model.addAttribute("content", "box");
+        model.addAttribute("content_modal_form", "box_edit_modal");
+
+        // Список с пагинацией и сортировкой
+        model.addAttribute("boxPage", boxPage);
+        model.addAttribute("boxes", boxPage.getContent());
+        model.addAttribute("currentPage", boxPage.getNumber());
+        model.addAttribute("totalPages", boxPage.getTotalPages());
+        model.addAttribute("totalElements", boxPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("search", searchAll);
+
+        // Данные для форм
+        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("employees", employeeService.getAll());
+        model.addAttribute("object", new Box());
+        model.addAttribute("saveUrl", "/box/save");
+
+        return "index";
+    }
 
     // Аренда бокса или боксов
     @GetMapping("/box/rent")
@@ -86,7 +111,7 @@ public class BoxController {
     }
 
     // Удаление бокса
-    @GetMapping("/box/delete")
+    @DeleteMapping("/box/delete")
     public String deleteBox(@RequestParam Long id) {
         boxService.delete(id);
         return "redirect:/";
