@@ -83,7 +83,7 @@ public class BoxController {
     // Фрагменты Бокс
     // форма добавление счета (аренда)
     @GetMapping("/box/fragments/account_edit_modal")
-    public String getAccountEditModal(Model model, @RequestParam Long id) {
+    public String getAccountEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("clients", clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
@@ -96,7 +96,7 @@ public class BoxController {
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/box/fragments/box_edit_modal")
-    public String getBoxEditModal(Model model, @RequestParam Long id) {
+    public String getBoxEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("object", boxService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/box/save");
         //model.addAttribute("box", new Box());

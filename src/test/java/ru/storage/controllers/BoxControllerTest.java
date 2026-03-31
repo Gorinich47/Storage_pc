@@ -110,7 +110,7 @@ public class BoxControllerTest {
     }
 
     @Test
-    void getBoxEditModal_ReturnsFragment_box_edit_modal_IsOK() throws Exception {
+    void getBoxEditModal_ReturnsIsOK() throws Exception {
 
         Box box = objects.getBox1();
         assertNotNull(box, "Объект Box1 не должен быть null в TestObjects!"); /* лучше добавить тесты на TestObjects */

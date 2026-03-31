@@ -54,7 +54,7 @@ public class PriceController {
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/price/fragments/price_edit_modal")
-    public String getPriceEditModal(Model model, @RequestParam Long id) {
+    public String getPriceEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("object", priceService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/price/save");
         model.addAttribute("allboxes", boxService.getAll());
