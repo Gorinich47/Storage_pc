@@ -18,7 +18,8 @@
                     <option value="">Выберите бокс</option>
                     <option th:each="box : ${allboxes}"
                             th:text="${box.idBox}"
-                            th:value="${box.id}"></option>
+                            th:value="${box.id}">
+                    </option>
                 </select>
             </div>
             <div class="mb-3">

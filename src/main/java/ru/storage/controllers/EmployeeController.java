@@ -41,7 +41,7 @@ public class EmployeeController {
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/employee/fragments/client_edit_modal")
-    public String getEmployeetEditModal(Model model, @RequestParam Long id) {
+    public String getEmployeetEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("object", employeeService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/employee/save");
         //model.addAttribute("client", new Client());

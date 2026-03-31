@@ -37,4 +37,8 @@ public class Person {
         this.address = address;
     }
 
+    public String getFullName() {
+        return String.format("%s %s %td.%tm.%tY", firstName, lastName, birthDate, birthDate, birthDate);
+    }
+
 }

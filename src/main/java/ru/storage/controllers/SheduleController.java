@@ -48,7 +48,7 @@ public class SheduleController {
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/shedule/fragments/shedule_edit_modal")
-    public String getSheduleEditModal(Model model, @RequestParam Long id) {
+    public String getSheduleEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("object", sheduleService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/shedule/save");
         model.addAttribute("allEmployees", employeeService.getAll());

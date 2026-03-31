@@ -24,7 +24,7 @@ public class Movement {
     @Column(name = "date", nullable = false, updatable = false)
     private LocalDateTime date; /* дата вермя движения */
     @Enumerated(EnumType.STRING)
-    private TypeMovements TypeMovements; /* тип операции */ /* обычно тут будет приход, но при перерасчёте может быть и расход*/
+    private TypeMovements typeMovements; /* тип операции */ /* обычно тут будет приход, но при перерасчёте может быть и расход*/
     private double summ; /* сумма */
 
     @ManyToOne

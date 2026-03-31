@@ -13,30 +13,22 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.storage.model.Client;
-import ru.storage.services.BoxService;
 import ru.storage.services.ClientService;
-import ru.storage.services.EmployeeService;
 import ru.storage.services.GeneralService;
 
 @Controller
 //@RequestMapping("")
 public class ClientController {
 
-    private final BoxService boxService; /* service */
     private final ClientService clientService;//
-    private final EmployeeService employeeService;//
     private final GeneralService generalService;/* service */
 
     @Autowired
     ClientController(
-                     BoxService boxService,
                      ClientService clientService,
-                     EmployeeService employeeService,//
                      GeneralService generalService) {
 
-        this.boxService = boxService;//
         this.clientService = clientService;//
-        this.employeeService = employeeService;//
         this.generalService = generalService;
 
     }
@@ -55,7 +47,6 @@ public class ClientController {
         Page<Client> clientPage = clientService.getAll(pageable);
 
         model.addAttribute("content", "client");
-        //model.addAttribute("clients", clientRepository.findAllByOrderByFirstNameAscLastNameAsc());
         model.addAttribute("object", new Client());
         model.addAttribute("saveUrl", "/client/save");
         // Список с пагинацией и сортировкой
@@ -67,12 +58,11 @@ public class ClientController {
         model.addAttribute("size", size);
 
         return "index";
-        //return "redirect:/client/list";
     }
 
     // форма изменения/добавления данных о боксе
     @GetMapping("/client/fragments/client_edit_modal")
-    public String getClientEditModal(Model model, @RequestParam Long id) {
+    public String getClientEditModal(Model model, @RequestParam(required = false) Long id) {
         model.addAttribute("object", clientService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/client/save");
         //model.addAttribute("client", new Client());
@@ -98,12 +88,5 @@ public class ClientController {
         clientService.generateClients();
         return "redirect:/client";
     }
-
-
-
-
-
-
-
 
 }

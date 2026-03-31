@@ -1,0 +1,78 @@
+<div th:fragment="content_modal_form" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <form id="edit_modal_form"
+          method="post"
+          th:action="@{${saveUrl}}"
+          th:object="${object}">
+
+        <input id="data-id" name="movementId" th:field="*{id}" type="hidden"/>
+        <div class="modal-header">
+            <h5 class="modal-title" id="objectModalLabel">Добавить движение</h5>
+            <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+        <div class="modal-body">
+
+
+            <div class="mb-3">
+                <label class="form-label">Дата и время</label>
+                <input class="form-control"
+                       name="date"
+                       required="required"
+                       th:value="${@generalService.formatDateTimeForInput(object.date)}"
+                       type="datetime-local"/>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="data-type-movements">Тип входа:</label>
+                <select class="form-select" id="data-type-movements" th:field="*{typeMovements}">
+                    <option value="">Выберите тип входа</option>
+                    <option th:each="typeMovements : ${T(ru.storage.enums.TypeMovements).values()}"
+                            th:text="${typeMovements.title}" th:value="${typeMovements}">TypeMovements
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="data-account-id">Счёт</label>
+                <select class="form-select" id="data-account-id" name="accountId" required th:field="*{account}">
+                    <option value="">Выберите счет</option>
+                    <option th:each="account : ${accounts}"
+                            th:text="${account.getName() + ' - ' + account.client.firstName + ' ' + account.client.lastName}"
+                            th:value="${account.id}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="data-client-id">Клиент</label>
+                <select class="form-select" id="data-client-id" name="clientId" required th:field="*{client}">
+                    <option value="">Выберите клиента</option>
+                    <option th:each="client : ${clients}"
+                            th:text="${client.getFullName()}"
+                            th:value="${client.id}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="data-employee-id">Сотрудник</label>
+                <select class="form-select" id="data-employee-id" name="employeeId" required th:field="*{employee}">
+                    <option value="">Выберите сотрудника</option>
+                    <option th:each="employee : ${employees}"
+                            th:text="${employee.getFullName()}"
+                            th:value="${employee.id}">
+                    </option>
+                </select>
+            </div>
+
+            <!--            <div class="mb-3">-->
+            <!--                <label class="form-label">Комментарий</label>-->
+            <!--                <textarea class="form-control" name="comment" rows="3" th:text="${object.comment}"></textarea>-->
+            <!--            </div>-->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </div>
+    </form>
+</div>

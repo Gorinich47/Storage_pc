@@ -47,4 +47,7 @@ public class Account {
     private Employee employee;
     private double sumAmount; /* сумма счета*/
 
+    public String getName() {
+        return String.format("№%s от %s ", this.id.toString(), this.date.toLocalDate().toString());
+    }
 }
