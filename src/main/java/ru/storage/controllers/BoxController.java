@@ -1,5 +1,6 @@
 package ru.storage.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -8,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
 import ru.storage.services.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 //@RequestMapping("")
@@ -80,6 +84,26 @@ public class BoxController {
         return "index";
     }
 
+    @PostMapping("/box/rent/{id}")
+    public String addRentBox(Model model, @PathVariable Long id, HttpSession session) {
+        // Получаем текущий список из сессии или создаем новый
+        List<Box> selectedBoxes = (List<Box>) session.getAttribute("selectedBoxes");
+        if (selectedBoxes == null) {
+            selectedBoxes = new ArrayList<>();
+        }
+
+        // Проверяем, нет ли его уже в списке, и добавляем (поиск в базе только для получения данных объекта)
+        if (selectedBoxes.isEmpty() || selectedBoxes.stream().noneMatch(b -> b.getId().equals(id))) {
+            Box box = boxService.getByIdOrNew(id);
+            selectedBoxes.add(box);
+        }
+
+        session.setAttribute("selectedBoxes", selectedBoxes);
+        model.addAttribute("rentedBoxes", selectedBoxes);
+
+        return "box_front :: rented-boxes-fragment";
+    }
+
     // Фрагменты Бокс
     // форма добавление счета (аренда)
     @GetMapping("/box/fragments/account_edit_modal")
@@ -102,6 +126,22 @@ public class BoxController {
         //model.addAttribute("box", new Box());
         return "box_edit_modal :: content_modal_form";
     }
+
+    @GetMapping("/box/fragments/box-grid")
+    public String getBoxGridFragment(Model model,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "6") int size,
+                                     @RequestParam(required = false) String search) {
+
+        Page<Box> boxPage = boxService.searchOrAll(page, size, search);
+
+        model.addAttribute("boxes", boxPage.getContent());
+        model.addAttribute("currentPage", boxPage.getNumber());
+        model.addAttribute("totalPages", boxPage.getTotalPages());
+
+        return "box_front :: box-grid-fragment";
+    }
+
 
     // Сохранение бокса
     @PostMapping("/box/save")

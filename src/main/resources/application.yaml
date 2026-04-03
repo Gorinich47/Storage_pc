@@ -13,3 +13,10 @@ spring:
     username: postgres
     password: 2133
     driver-class-name: org.postgresql.Driver
+#  server:
+#    port: 8443
+#    ssl:
+#      key-store: classpath:keystore.p12 # keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore src/main/resources/keystore.p12 -validity 3650
+##      key-store-password: your_password
+#      key-store-type: PKCS12
+#      key-alias: tomcat

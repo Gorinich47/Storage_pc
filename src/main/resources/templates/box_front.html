@@ -1,210 +1,334 @@
 <div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <h2>Боксы</h2>
 
-        <!-- Форма поиска -->
-        <form class="mb-4" method="get" th:action="@{/box}">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <input class="form-control"
-                           name="search"
-                           placeholder="Поиск по ID бокса"
-                           th:value="${#strings.isEmpty(param.search) ? '' : param.search}"
-                           type="text"/>
+        <div class="row">
+
+            <!-- Форма поиска -->
+            <form class="mb-4" method="get" th:action="@{/box}">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input class="form-control"
+                               name="search"
+                               placeholder="Поиск по ID бокса"
+                               th:value="${#strings.isEmpty(param.search) ? '' : param.search}"
+                               type="text"/>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">Найти</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-secondary w-100" th:href="@{/box}">Сбросить</a>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" type="submit">Найти</button>
-                </div>
-                <div class="col-md-2">
-                    <a class="btn btn-secondary w-100" th:href="@{/box}">Сбросить</a>
+            </form>
+
+            <!-- Основная колонка - Сетка боксов -->
+            <div class="col-8">
+
+                <div id="box-grid-container"
+                     th:fragment="box-grid-fragment">
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <div class="col" th:each="box : ${boxes}">
+                            <div class="card h-100">
+                                <!-- Статус свободен/занят -->
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge text-white"
+                                          th:classappend="${box.isFree} ? 'bg-success' : 'bg-danger'">
+                                        <span th:text="${box.isFree} ? 'Свободен' : 'Занят'"></span>
+                                    </span>
+                                </div>
+
+                                <div class="card-body">
+                                    <h5 class="card-title">Бокс <span th:text="${box.idBox}"></span></h5>
+
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="small text-muted">Площадь</div>
+                                            <div><strong th:text="${box.square}"></strong> м²</div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Цена</div>
+                                            <div><strong
+                                                    th:text="${#numbers.formatDecimal(box.price, 0, 'COMMA', 0, 'POINT')}"></strong>
+                                                ₽
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Длина × Ширина</div>
+                                            <div><span th:text="${box.length}"></span> × <span
+                                                    th:text="${box.width}"></span> м
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Высота</div>
+                                            <div><span th:text="${box.height}"></span> м</div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2">
+
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="small text-muted">Вход</div>
+                                            <div th:text="${box.entrance.title}"></div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Отопление</div>
+                                            <div>
+                                                <span th:classappend="${box.isWarm} ? 'text-success' : 'text-danger'"
+                                                      th:text="${box.isWarm} ? 'Есть' : 'Нет'"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Электричество</div>
+                                            <div>
+                                                <span th:classappend="${box.isElectricity} ? 'text-success' : 'text-danger'"
+                                                      th:text="${box.isElectricity} ? 'Есть' : 'Нет'"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="small text-muted">Вода</div>
+                                            <div>
+                                                <span th:classappend="${box.isWater} ? 'text-success' : 'text-danger'"
+                                                      th:text="${box.isWater} ? 'Есть' : 'Нет'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-warning flex-fill"
+                                                onclick="updateRentedBoxes(this)"
+                                                th:attr="data-id=${box.id}"
+                                                type="button">
+                                            Арендовать
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение о пустом списке -->
+                    <div class="alert alert-info mt-4" th:if="${#lists.isEmpty(boxes)}">
+                        Боксы не найдены.
+                    </div>
+
+                    <!-- Пагинация -->
+                    <!-- Пагинация (теперь тоже внутри фрагмента) -->
+                    <div class="mt-4" th:if="${totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" href="#"
+                                   th:if="${currentPage > 0}"
+                                   th:onclick="|loadPage(event, ${currentPage - 1})|">Назад</a>
+                                <span class="page-link" th:unless="${currentPage > 0}">Назад</span>
+                            </li>
+
+                            <li class="page-item" th:classappend="${i == currentPage} ? 'active'"
+                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                                <a class="page-link" href="#"
+                                   th:onclick="|loadPage(event, ${i})|"
+                                   th:text="${i + 1}">1</a>
+                            </li>
+
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" href="#"
+                                   th:if="${currentPage < totalPages - 1}"
+                                   th:onclick="|loadPage(event, ${currentPage + 1})|">Вперёд</a>
+                                <span class="page-link" th:unless="${currentPage < totalPages - 1}">Вперёд</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </form>
 
-        <!-- Кнопка добавления -->
-        <!--    <button class="btn btn-primary mb-3"-->
-        <!--            data-bs-target="#boxModal"-->
-        <!--            data-bs-toggle="modal"-->
-        <!--            onclick="clearForm('Добавить бокс');"-->
-        <!--            th:attr="data-id-context-form=1"-->
-        <!--            type="button">-->
-        <!--      Добавить бокс-->
-        <!--    </button>-->
-
-        <!-- Сетка боксов -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div class="col" th:each="box : ${boxes}">
-                <div class="card h-100">
-                    <!-- Статус свободен/занят -->
-                    <div class="position-absolute top-0 end-0 m-2">
-                        <span class="badge text-white"
-                              th:classappend="${box.isFree} ? 'bg-success' : 'bg-danger'">
-                            <span th:text="${box.isFree} ? 'Свободен' : 'Занят'"></span>
-                        </span>
+            <!-- Третья колонка - Поиск клиента и арендованные боксы -->
+            <div class="col-3">
+                <!-- Первый блок - Поиск клиента и информация -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Поиск клиента</h5>
                     </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title">Бокс <span th:text="${box.idBox}"></span></h5>
-
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <div class="small text-muted">Площадь</div>
-                                <div><strong th:text="${box.square}"></strong> м²</div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Цена</div>
-                                <div><strong
-                                        th:text="${#numbers.formatDecimal(box.price, 0, 'COMMA', 0, 'POINT')}"></strong>
-                                    ₽
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Длина × Ширина</div>
-                                <div><span th:text="${box.length}"></span> × <span th:text="${box.width}"></span> м
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Высота</div>
-                                <div><span th:text="${box.height}"></span> м</div>
-                            </div>
-                        </div>
-
-                        <hr class="my-2">
-
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <div class="small text-muted">Вход</div>
-                                <div th:text="${box.entrance.title}"></div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Отопление</div>
-                                <div>
-                                    <span th:classappend="${box.isWarm} ? 'text-success' : 'text-danger'"
-                                          th:text="${box.isWarm} ? 'Есть' : 'Нет'"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Электричество</div>
-                                <div>
-                                    <span th:classappend="${box.isElectricity} ? 'text-success' : 'text-danger'"
-                                          th:text="${box.isElectricity} ? 'Есть' : 'Нет'"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="small text-muted">Вода</div>
-                                <div>
-                                    <span th:classappend="${box.isWater} ? 'text-success' : 'text-danger'"
-                                          th:text="${box.isWater} ? 'Есть' : 'Нет'"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer bg-transparent border-top-0">
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-warning flex-fill"
-                                    data-bs-target="#boxModal"
+                    <div class="card-body" id="info-client-block">
+                        <!-- Кнопка для открытия модального окна поиска -->
+                        <div class="d-flex gap-2 mb-3">
+                            <button class="btn btn-outline-secondary w-100 mb-3"
+                                    data-bs-target="#searchClientModal"
                                     data-bs-toggle="modal"
-                                    onclick="rentBoxId(this)"
-                                    th:attr="data-id=${box.id}, data-id-box=${box.idBox}, data-id-context-form=1"
                                     type="button">
-                                Арендовать
+                                <i class="bi bi-search"></i> Найти клиента
                             </button>
-
-                            <!--              <button class="btn btn-sm btn-info flex-fill"-->
-                            <!--                      data-bs-target="#boxModal"-->
-                            <!--                      data-bs-toggle="modal"-->
-                            <!--                      onclick="editModalForm(this, '/box/fragments/box_edit_modal', 'Редактировать бокс')"-->
-                            <!--                      th:attr="data-id=${box.id}"-->
-                            <!--                      type="button">-->
-                            <!--                Редактировать-->
-                            <!--              </button>-->
+                            <button class="btn btn-outline-danger w-10 mb-3"
+                                    data-bs-placement="top"
+                                    data-bs-toggle="tooltip"
+                                    onclick="clearClientInfo()"
+                                    title="Очистит выбор клиента"
+                                    type="button">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
                         </div>
+                        <!-- Модальное окно поиска клиента -->
+                        <div aria-hidden="true" aria-labelledby="searchClientModalLabel"
+                             class="modal fade" id="searchClientModal"
+                             tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="searchClientModalLabel">Поиск клиента</h5>
+                                        <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal"
+                                                type="button"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <input class="form-control"
+                                                   id="clientSearchInput"
+                                                   onkeyup="searchClients()"
+                                                   placeholder="Введите имя, фамилию, телефон или email..."
+                                                   type="text">
+                                        </div>
+                                        <div class="list-group" id="searchResults">
+                                            <!-- Результаты поиска будут добавляться сюда динамически -->
+                                        </div>
+                                        <div class="text-center text-muted mt-3" id="noResults" style="display: none;">
+                                            <i class="bi bi-search" style="font-size: 3rem;"></i>
+                                            <p class="mt-2 mb-0">Клиент не найден</p>
+                                            <small>Попробуйте изменить поисковый запрос</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Блок клиента -->
+                        <div id="client-info-container"> <!-- скрытие блока style="display: none;"> -->
+                            <div id="client-info-fields"
+                                 th:fragment="client-details-fragment">
+                                <!-- При обновлении через fetch делаем блок видимым -->
+                                <div th:if="${selectedClient != null}">
+                                    <h6 class="mb-3" id="info-client-block-fio"
+                                        th:text="${selectedClient.lastName + ' ' + selectedClient.firstName}"></h6>
+                                    <div class="mb-3">
+                                        <strong>Дата рождения:</strong>
+                                        <span class="text-muted"
+                                              id="info-client-block-dr"
+                                              th:text="${#dates.format(selectedClient.birthDate, 'dd.MM.yyyy')}"></span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Телефон:</strong>
+                                        <span class="text-muted" id="info-client-block-phone"
+                                              th:text="${selectedClient.phoneNumber}"></span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Email:</strong>
+                                        <a class="text-decoration-none"
+                                           id="info-client-block-email"
+                                           th:href="'mailto:' + ${selectedClient.emailAddress}"
+                                           th:text="${selectedClient.emailAddress}"></a>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Адрес:</strong>
+                                        <span class="text-muted" id="info-client-block-addr"
+                                              th:text="${selectedClient.address}"></span>
+                                    </div>
+                                    <div>
+                                        <!--                            &lt;!&ndash; Кнопки действий с клиентом &ndash;&gt;-->
+                                        <!--                            <div class="d-grid gap-2">-->
+                                        <!--                                <button class="btn btn-sm btn-warning"-->
+                                        <!--                                        data-bs-target="#clientModal"-->
+                                        <!--                                        data-bs-toggle="modal"-->
+                                        <!--                                        onclick="editModalForm(this, '/client/fragments/client_edit_modal', 'Редактировать клиента')"-->
+                                        <!--                                        th:attr="data-id=${selectedClient.id}"-->
+                                        <!--                                        type="button">-->
+                                        <!--                                    Редактировать профиль-->
+                                        <!--                                </button>-->
+                                        <!--                                <button class="btn btn-sm btn-info"-->
+                                        <!--                                        type="button"-->
+                                        <!--                                        onclick="showClientAccounts()">-->
+                                        <!--                                    Просмотреть счета-->
+                                        <!--                                </button>-->
+                                        <!--                            </div>-->
+                                    </div>
+                                </div>
+                                <div class="text-muted small" th:unless="${selectedClient != null}">
+                                    <!-- Сообщение при отсутствии выбранного клиента -->
+                                    <div class="text-center text-muted" id="info-client-block-empty"
+                                         th:if="${selectedClient == null}">
+                                        <i class="bi bi-person-fill" style="font-size: 3rem;"></i>
+                                        <p class="mt-2 mb-0">Клиент не выбран</p>
+                                        <small>Нажмите "Найти клиента"</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Второй блок - Арендованные боксы (под информацией о клиенте) -->
+                <div class="card" id="rented-boxes-container">
+                    <div th:fragment="rented-boxes-fragment">
+
+                        <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Арендованные боксы</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${rentedBoxes != null and !rentedBoxes.empty}">
+                            <div class="list-group list-group-flush" id="rentedBoxesList">
+                                <div class="list-group-item d-flex justify-content-between align-items-center"
+                                     th:each="box : ${rentedBoxes}">
+                                    <div>
+                                        <h6 class="mb-1" th:text="${box.idBox}"></h6>
+                                        <small th:text="${box.square + ' м², ' + box.length + '×' + box.width + ' м'}"></small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill"
+                                          th:text="${box.price} + ' ₽'"></span>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-success w-100" type="button">
+                                    Всего: <span th:text="${rentedBoxes.size()}"></span> бокс(ов)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Сообщение при отсутствии арендованных боксов -->
+                        <div class="text-center text-muted" th:if="${rentedBoxes == null or rentedBoxes.empty}">
+                            <i class="bi bi-box" style="font-size: 3rem;"></i>
+                            <p class="mt-2 mb-0">Нет арендованных боксов</p>
+                            <small>У выбранного клиента пока нет аренды</small>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Сообщение о пустом списке -->
-        <div class="alert alert-info mt-4" th:if="${#lists.isEmpty(boxes)}">
-            Боксы не найдены.
-        </div>
-
-        <!-- Пагинация -->
-        <div class="mt-4" th:if="${totalPages > 1}">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <span class="page-link" th:if="${currentPage == 0}">Назад</span>
-                    <a class="page-link"
-                       th:href="@{/(search=${param.search}, page=${currentPage - 1}, size=${size})}"
-                       th:unless="${currentPage == 0}">Назад</a>
-                </li>
-
-                <li class="page-item"
-                    th:classappend="${i == currentPage} ? 'active'"
-                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <a class="page-link"
-                       th:href="@{/(search=${param.search}, page=${i}, size=${size})}"
-                       th:text="${i + 1}">1</a>
-                </li>
-
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                    <span class="page-link" th:if="${currentPage == totalPages - 1}">Вперёд</span>
-                    <a class="page-link"
-                       th:href="@{/(search=${param.search}, page=${currentPage + 1}, size=${size})}"
-                       th:unless="${currentPage == totalPages - 1}">Вперёд</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!--   Модальное окно для бокса -->
-    <div aria-hidden="true"
-         aria-labelledby="boxModalLabel"
-         class="modal fade"
-         id="boxModal"
-         tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="container">
-                    <div id="content-modal-form-id" th:insert="~{box_edit_modal :: content_modal_form}"></div>
+        <!-- Модальное окно для бокса -->
+        <div aria-hidden="true"
+             aria-labelledby="boxModalLabel"
+             class="modal fade"
+             id="boxModal"
+             tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="container">
+                        <div id="content-modal-form-id" th:insert="~{box_edit_modal :: content_modal_form}"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Модальное окно подтверждения удаления -->
-    <!--  <div aria-hidden="true"-->
-    <!--       aria-labelledby="deleteConfirmModalLabel"-->
-    <!--       class="modal fade"-->
-    <!--       id="deleteConfirmModal"-->
-    <!--       tabindex="-1">-->
-    <!--    <div class="modal-dialog">-->
-    <!--      <div class="modal-content">-->
-    <!--        <div class="modal-header">-->
-    <!--          <h5 class="modal-title" id="deleteConfirmModalLabel">Подтвердите действие</h5>-->
-    <!--          <button aria-label="Закрыть"-->
-    <!--                  class="btn-close"-->
-    <!--                  data-bs-dismiss="modal"-->
-    <!--                  type="button"></button>-->
-    <!--        </div>-->
-    <!--        <div class="modal-body">-->
-    <!--          <a id="textFormQuestion"></a> <strong id="objectNameFormQuestion"></strong>?-->
-    <!--        </div>-->
-    <!--        <div class="modal-footer">-->
-    <!--          <button class="btn btn-secondary"-->
-    <!--                  data-bs-dismiss="modal"-->
-    <!--                  type="button">Отмена</button>-->
-    <!--          <a class="btn btn-danger"-->
-    <!--             id="confirmDeleteBtn">Удалить</a>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <!--  </div>-->
 </div>

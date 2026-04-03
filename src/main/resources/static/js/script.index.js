@@ -181,3 +181,159 @@ async function saveRandomClient() {
     }
 
 }
+
+//// Добавляем кнопку поиска в хедер
+//document.querySelector('.col-md-3.text-end').insertAdjacentHTML('beforebegin', `
+//    <div class="col-md-3 text-end">
+//        <button class="btn btn-outline-secondary me-2"
+//                type="button"
+//                data-bs-toggle="modal"
+//                data-bs-target="#searchClientModal">
+//            <i class="bi bi-search"></i> Поиск клиента
+//        </button>
+//    </div>
+//`);
+
+function searchClients() {
+    const query = document.getElementById('clientSearchInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+
+    if (query.length < 2) {
+        resultsContainer.innerHTML = '';
+        noResults.style.display = 'none';
+        return;
+    }
+
+    // Очистка предыдущих результатов
+    resultsContainer.innerHTML = '';
+
+    // Выполнение поиска через AJAX
+    fetch(`/client/search?query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(clients => {
+            if (clients.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+
+            clients.forEach(client => {
+                const listItem = document.createElement('a');
+                listItem.className = 'list-group-item list-group-item-action';
+                listItem.href = '#';
+                // Вывод представления о клинетах
+                listItem.innerHTML = `
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${client.lastName} ${client.firstName}</h6>
+                        <small>${client.phoneNumber}</small>
+                    </div>
+                    <p class="mb-1">${client.emailAddress}</p>
+                    <small>${client.address}</small>
+                `;
+
+                // добавление клиента в боковую панель
+                listItem.onclick = function(e) {
+                    e.preventDefault();
+                    //selectClient(client.id);
+                    updateClientInfo(client.id);
+                    bootstrap.Modal.getInstance(document.getElementById('searchClientModal')).hide();
+                };
+
+                resultsContainer.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка при поиске:', error);
+            noResults.innerHTML = '<p class="text-danger">Ошибка при выполнении поиска</p>';
+            noResults.style.display = 'block';
+        });
+}
+
+function updateClientInfo(clientId) {
+    const container = document.getElementById('client-info-container');
+
+    fetch(`/client/client-details/${clientId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка сети');
+            return response.text();
+        })
+        .then(html => {
+            // Заменяем содержимое контейнера новым HTML от сервера
+            container.innerHTML = html;
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+
+function clearClientInfo() {
+    updateClientInfo(-1)
+}
+
+function updateRentedBoxes(button) {
+
+    const boxId = button.getAttribute('data-id');
+    fetch(`/box/rent/${boxId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка добавления');
+            return response.text();
+        })
+        .then(html => {
+            // Обновляем содержимое контейнера в правой колонке
+            document.getElementById('rented-boxes-container').innerHTML = html;
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU');
+}
+
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+
+function showClientAccounts() {
+    // Логика отображения счетов клиента
+    alert('Функция просмотра счетов клиента');
+}
+
+function loadPage(event, page) {
+    event.preventDefault();
+
+    const search = document.querySelector('input[name="search"]')?.value || '';
+    const size = 6;
+
+    fetch(`/box/fragments/box-grid?page=${page}&size=${size}&search=${encodeURIComponent(search)}`)
+        .then(response => response.text())
+        .then(html => {
+
+            document.getElementById('box-grid-container').outerHTML = html;
+
+            updatePagination(page);
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки страницы:', error);
+        });
+}
+
+function updatePagination(currentPage) {
+    const paginationItems = document.querySelectorAll('.pagination .page-item');
+    paginationItems.forEach(item => {
+        const link = item.querySelector('.page-link');
+        if (link && link.textContent !== 'Назад' && link.textContent !== 'Вперёд') {
+            const pageNum = parseInt(link.textContent) - 1;
+            if (pageNum === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        }
+    });
+}
