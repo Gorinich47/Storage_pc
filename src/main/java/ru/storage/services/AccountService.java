@@ -37,16 +37,6 @@ public class AccountService extends BaseService<Account, AccountRepository> {
         accountRepository.save(account);
     }
 
-//    public void save(Account account, Long boxId) {
-//        if (boxId!=null) {
-//            List<Box> boxList = boxService.getByListId(List.of(boxId));
-//            account.setBox(boxList);
-//        } else {
-//            account.setBox(List.of());
-//        }
-//        accountRepository.save(account);
-//    }
-
     @Override
     public Account getByIdOrNew(Long id) {
         Account account = getById(id).orElse(new Account());

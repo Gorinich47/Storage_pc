@@ -14,7 +14,12 @@ public interface BoxRepository extends JpaRepository<Box, Long>, JpaSpecificatio
 
     Page<Box> findAllByOrderByIdBoxAsc(Pageable pageable);
 
-    @Query("SELECT b FROM Box b WHERE CAST(b.id AS string) LIKE %:search% OR LOWER(b.idBox) LIKE LOWER(CONCAT('%', :search, '%')) ")
+    @Query("""
+            SELECT b
+            FROM Box b
+            WHERE CAST(b.id AS string) LIKE %:search%
+                OR LOWER(b.idBox) LIKE LOWER(CONCAT('%', :search, '%')) 
+            """)
     Page<Box> findBySearchIgnoreCase(@Param("search") String search, Pageable pageable);
 
     List<Box> findAllByOrderByIdBoxAsc();

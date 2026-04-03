@@ -181,3 +181,275 @@ async function saveRandomClient() {
     }
 
 }
+
+//// Добавляем кнопку поиска в хедер
+//document.querySelector('.col-md-3.text-end').insertAdjacentHTML('beforebegin', `
+//    <div class="col-md-3 text-end">
+//        <button class="btn btn-outline-secondary me-2"
+//                type="button"
+//                data-bs-toggle="modal"
+//                data-bs-target="#searchClientModal">
+//            <i class="bi bi-search"></i> Поиск клиента
+//        </button>
+//    </div>
+//`);
+
+function searchClients() {
+    const query = document.getElementById('clientSearchInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+
+    if (query.length < 2) {
+        resultsContainer.innerHTML = '';
+        noResults.style.display = 'none';
+        return;
+    }
+
+    // Очистка предыдущих результатов
+    resultsContainer.innerHTML = '';
+
+    // Выполнение поиска через AJAX
+    fetch(`/client/search?query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(clients => {
+            if (clients.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+
+            clients.forEach(client => {
+                const listItem = document.createElement('a');
+                listItem.className = 'list-group-item list-group-item-action';
+                listItem.href = '#';
+                listItem.innerHTML = `
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${client.lastName} ${client.firstName}</h6>
+                        <small>${client.phoneNumber}</small>
+                    </div>
+                    <p class="mb-1">${client.emailAddress}</p>
+                    <small>${client.address}</small>
+                `;
+
+                // добавление клиента в боковую панель
+                listItem.onclick = function(e) {
+                    e.preventDefault();
+                    selectClient(client.id);
+                    bootstrap.Modal.getInstance(document.getElementById('searchClientModal')).hide();
+                };
+
+                resultsContainer.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка при поиске:', error);
+            noResults.innerHTML = '<p class="text-danger">Ошибка при выполнении поиска</p>';
+            noResults.style.display = 'block';
+        });
+}
+
+function selectClient(clientId) {
+    console.log('Выбор клиента с ID:', clientId);
+
+    fetch(`/client/select/${clientId}`)
+        .then(response => {
+            console.log('Ответ получен:', response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text().then(text => {
+                console.log('Raw response:', text); // Проверяем сырой ответ
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', e);
+                    console.error('Response text:', text);
+                    throw e;
+                }
+            });
+        })
+        .then(data => {
+            console.log('Данные клиента:', data);
+
+            // Проверяем структуру данных
+            if (!data || !data.selectedClient) {
+                console.error('Некорректная структура данных:', data);
+                resetClientInfo();
+                return;
+            }
+
+            // Добавим проверку полей клиента
+            console.log('Client fields:', {
+                id: data.selectedClient.id,
+                firstName: data.selectedClient.firstName,
+                lastName: data.selectedClient.lastName,
+                birthDate: data.selectedClient.birthDate,
+                phoneNumber: data.selectedClient.phoneNumber,
+                emailAddress: data.selectedClient.emailAddress,
+                address: data.selectedClient.address
+            });
+
+            updateClientInfo(data.selectedClient, data.rentedBoxes || []);
+        })
+        .catch(error => {
+            console.error('Ошибка при выборе клиента:', error);
+        });
+}
+
+function updateClientInfo(client, boxes) {
+
+    const infoBlock = document.getElementById('info-client-block');
+    if (!infoBlock) {
+        console.error('Блок информации о клиенте не найден');
+        return;
+    }
+
+    const fields = document.getElementById('client-info-fields');
+    fields.style.display = 'block';
+
+      // При выборе клиента
+
+      // document.getElementById('info-client-block-empty').style.display = 'none';
+
+    if (!client) {
+        resetClientInfo();
+        return;
+    }
+
+    try {
+        // Обновляем существующие элементы по их ID
+        const fioElement = document.getElementById('info-client-block-fio');
+        const drElement = document.getElementById('info-client-block-dr');
+        const phoneElement = document.getElementById('info-client-block-phone');
+        const emailElement = document.getElementById('info-client-block-email');
+        const addrElement = document.getElementById('info-client-block-addr');
+
+        console.log('Updating elements:', {
+            fioElement: !!fioElement,
+            drElement: !!drElement,
+            phoneElement: !!phoneElement,
+            emailElement: !!emailElement,
+            addrElement: !!addrElement
+        });
+
+        if (fioElement) {
+            fioElement.textContent = `${client.lastName || ''} ${client.firstName || ''}`.trim();
+            fioElement.style.display = 'block';
+        }
+
+        if (drElement) {
+            drElement.textContent = formatDate(client.birthDate);
+            drElement.parentElement.style.display = 'block';
+        }
+
+        if (phoneElement) {
+            phoneElement.textContent = client.phoneNumber || '';
+            phoneElement.parentElement.style.display = 'block';
+        }
+
+        if (emailElement) {
+            const emailText = client.emailAddress || '';
+            emailElement.textContent = emailText;
+            emailElement.href = emailText ? `mailto:${emailText}` : '#';
+            emailElement.parentElement.style.display = 'block';
+        }
+
+        if (addrElement) {
+            addrElement.textContent = client.address || '';
+            addrElement.parentElement.style.display = 'block';
+        }
+
+        // Показываем блок клиента и скрываем сообщение "не выбран"
+        const clientInfo = infoBlock.querySelector('#info-client-block-empty');
+        clientInfo.style.display = 'block';
+//        const noClientMessage = infoBlock.querySelector('.text-center.text-muted');
+
+//        if (clientInfo) {
+//            clientInfo.forEach(el => el.style.display = 'block');
+//        }
+
+//        if (noClientMessage) {
+//            noClientMessage.style.display = 'none';
+//        }
+
+        // Обновляем арендованные боксы
+        updateRentedBoxes(boxes);
+
+    } catch (error) {
+        console.error('Ошибка при обновлении информации о клиенте:', error);
+    }
+}
+
+function updateRentedBoxes(boxes) {
+    const boxesList = document.getElementById('rentedBoxesList');
+    const noResults = document.getElementById('noResults');
+    const totalBox = document.querySelector('.btn-outline-success');
+
+    if (!boxesList) return;
+
+    boxesList.innerHTML = '';
+
+    if (!boxes || boxes.length === 0) {
+        noResults.style.display = 'block';
+        if (totalBox) {
+            totalBox.innerHTML = 'Всего: <span>0</span> бокс(ов)';
+        }
+        return;
+    }
+
+    noResults.style.display = 'none';
+
+    boxes.forEach(box => {
+        const listItem = document.createElement('a');
+        listItem.className = 'list-group-item list-group-item-action';
+        listItem.href = '#';
+        listItem.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">${box.idBox}</h6>
+                <small>${box.square} м²</small>
+            </div>
+            <div class="d-flex w-100 justify-content-between">
+                <small>${box.length}×${box.width} м</small>
+                <span class="badge bg-primary rounded-pill">
+                    ${formatPrice(box.price)} ₽
+                </span>
+            </div>
+        `;
+        boxesList.appendChild(listItem);
+    });
+
+    if (totalBox) {
+        totalBox.innerHTML = `Всего: <span>${boxes.length}</span> бокс(ов)`;
+    }
+}
+
+function resetClientInfo() {
+    const clientCard = document.querySelector('.card-body');
+    if (clientCard) {
+        clientCard.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="bi bi-person-fill" style="font-size: 3rem;"></i>
+                <p class="mt-2 mb-0">Клиент не выбран</p>
+                <small>Нажмите "Найти клиента"</small>
+            </div>
+        `;
+    }
+    updateRentedBoxes([]);
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU');
+}
+
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+
+function showClientAccounts() {
+    // Логика отображения счетов клиента
+    alert('Функция просмотра счетов клиента');
+}

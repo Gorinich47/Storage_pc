@@ -13,6 +13,8 @@ import ru.storage.services.ClientService;
 import ru.storage.services.EmployeeService;
 import ru.storage.services.GeneralService;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/")
 public class IndexController {
@@ -44,7 +46,7 @@ public class IndexController {
                         @RequestParam(required = false) String searchAll) {
 
         Page<Box> boxPage = boxService.searchOrAll(page, size, searchAll);
-
+        List<Box> rentedBoxList = List.of();
         model.addAttribute("content", "box_front");
         model.addAttribute("content_modal_form", "box_edit_modal");
 
@@ -61,6 +63,9 @@ public class IndexController {
         model.addAttribute("clients", clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Box());
+        // Добавляем атрибуты для боковой панели (по умолчанию null)
+        model.addAttribute("selectedClient", clientService.getByIdOrNew(null));
+        model.addAttribute("rentedBoxes", rentedBoxList);
         model.addAttribute("saveUrl", "/box/save");
 
         return "index";
