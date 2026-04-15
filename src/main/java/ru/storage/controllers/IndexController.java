@@ -74,10 +74,11 @@ public class IndexController {
         model.addAttribute("search", searchAll);
 
         // Данные для форм
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null);//clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Box());
         // Добавляем атрибуты для боковой панели (по умолчанию null)
+        model.addAttribute("labelInput", "");
         model.addAttribute("selectedClient", selectedClient);
         model.addAttribute("rentedBoxes", rentedBoxList);
         model.addAttribute("saveUrl", "/box/save");

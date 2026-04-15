@@ -28,7 +28,17 @@ public class Employee extends Person {
     //    public Employee(){
 //        super();
 //    }
-    public Employee(String firstName, String lastName, java.util.Date birthDate, String phoneNumber, String emailAddress, String address, PostEmployee postEmployee, Date dateStart, Date dateEnd, Boolean isFullTime) {
+    public Employee(String lastName,
+                    String firstName,
+                    String patronymic,
+                    Date birthDate,
+                    String phoneNumber,
+                    String emailAddress,
+                    String address,
+                    PostEmployee postEmployee,
+                    Date dateStart,
+                    Date dateEnd,
+                    Boolean isFullTime) {
         super();
     }
 }

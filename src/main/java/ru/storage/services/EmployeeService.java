@@ -26,7 +26,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeRepository> {
 
     @Override
     public List<Employee> getAll() {
-        return employeeRepository.findAllByOrderByFirstNameAscLastNameAsc();
+        return employeeRepository.findAllByOrderByLastNameAscFirstNameAscPatronymicAscBirthDateAsc();
     }
 
 }

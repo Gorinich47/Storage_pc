@@ -15,10 +15,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     String SEARCH_QUERY =
             """
                        SELECT t FROM Client t
-                         WHERE LOWER(CONCAT(t.firstName, ' ', t.lastName)) LIKE LOWER(CONCAT('%', :search, '%'))
+                         WHERE LOWER(CONCAT(t.lastName, ' ', t.firstName, ' ', t.patronymic)) LIKE LOWER(CONCAT('%', :search, '%'))
                             OR LOWER(t.emailAddress) LIKE LOWER(CONCAT('%', :search, '%'))
                             OR CAST(FUNCTION('to_char', t.birthDate, 'DD.MM.YYYY') AS string) LIKE CONCAT('%', :search, '%')
                             OR CAST(FUNCTION('regexp_replace', t.phoneNumber, '[^0-9]', '', 'g') AS string) LIKE CONCAT('%', :search, '%')
+                         ORDER BY t.lastName, t.firstName, t.patronymic, t.birthDate, t.phoneNumber
                     """;
 
     @Query(value = SEARCH_QUERY)
@@ -27,5 +28,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Query(value = SEARCH_QUERY)
     List<Employee> findBySearchIgnoreCase(@Param("search") String search);
 
-    List<Employee> findAllByOrderByFirstNameAscLastNameAsc();
+    List<Employee> findAllByOrderByLastNameAscFirstNameAscPatronymicAscBirthDateAsc();
 }

@@ -59,10 +59,11 @@ public class BoxController {
         model.addAttribute("search", searchAll);
 
         // Данные для форм
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null);//clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Box());
         model.addAttribute("saveUrl", "/box/save");
+        model.addAttribute("labelInput", "");
 
         return "index";
     }

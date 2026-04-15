@@ -1,160 +1,118 @@
 package ru.storage.utils;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Component;
 import ru.storage.model.Client;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
-
+@Component
 public class DemoUtils {
 
+    @Component
     static public class FIO {
 
-        static Random random = new Random();
+        private static List<String> listNamesMale;
+        private static List<String> listNamesFemale;
+        private static List<String> listSurnamesMale;
+        private static List<String> listSurnamesFemale;
+        private static List<String> listPatronymicsMale;
+        private static List<String> listPatronymicsFemale;
 
-        static String[] getArrayNameMale() {
+        private static FioService fioService;
+        private static final Random random = new Random();
 
-            String[] names = {"Андрей", "Алексей", "Александр", "Антон", "Анатолий", "Арсений",
-                    "Борис", "Богдан",
-                    "Валерий", "Вальтер", "Вислав", "Виктор", "Владимир", "Владислав",
-                    "Григорий", "Георгий", "Геннадий",
-                    "Дмитрий", "Денис", "Добрыня",
-                    "Евгений", "Егор", "Ермолай", "Еремей",
-                    "Жак",
-                    "Захар",
-                    "Илья",
-                    "Карп", "Кирилл", "Константин", "Клим",
-                    "Лев", "Леонид",
-                    "Максим", "Михаил", "Марк",
-                    "Нестер", "Николай", "Никифор", "Никодим", "Назар", "Никита",
-                    "Олег", "Остап", "Окслав",
-                    "Петр", "Павел", "Прохор", "Панкрат", "Пантелей",
-                    "Роман", "Ринат",
-                    "Семён",
-                    "Тимофей", "Трофим", "Трифан",
-                    "Федот", "Филипп", "Фёдор",
-                    "Харитон",
-                    "Юлий", "Юрий",
-                    "Яков", "Ян"};
-
-            return names;
-        }
-
-        static String[] getArrayNameFemale() {
-
-            String[] names = {"Анна", "Анастася", "Александра", "Афронья", "Алина", "Ангелина",
-                    "Богиня", "Богдана",
-                    "Валерия", "Виктория", "Василиса", "Владислава",
-                    "Галина", "Грация", "Глаша",
-                    "Дарья", "Дуня",
-                    "Евгения", "Елена", "Елизавета", "Екатерина",
-                    "Жана", "Жаклин",
-                    "Зоя",
-                    "Ирина", "Ирма", "Иллаиза", "Инга",
-                    "Катерина", "Клавдия", "Колина", "Ксения",
-                    "Леся",
-                    "Марина", "Мона", "Мила",
-                    "Нина", "Надежда",
-                    "Ольга", "Осина", "Оксана",
-                    "Патриция", "Павлина", "Песня",
-                    "Рима",
-                    "Селена", "София", "Соня", "Стела", "Сяблята",
-                    "Татьяна", "Талия", "Трифанна",
-                    "Фекла", "Фрида",
-                    "Юлия", "Юнона",
-                    "Яна"};
-
-            return names;
-        }
-
-        static String[] getArrayFam(boolean isMale) {
-
-            String[] fams = {"Аверкиев", "Авдеев", "Акименко", "Антонов", "Акимов", "Андреев", "Арапов", "Акимов",
-                    "Бабушкин", "Баканов", "Белов", "Бедин", "Бродов", "Бодров", "Бесов", "Блинов", "Бояров",
-                    "Ванин", "Вашкин", "Васильев", "Вешков", "Вишневский", "Войнов", "Волков", "Высоцкий",
-                    "Гашников", "Гаврилов", "Ганин", "Герцин", "Гирин", "Грибов", "Горшвок", "Грядкин", "Грачёв",
-                    "Данилин", "Даров", "Демин", "Дедушкин", "Думов", "Дубов", "Демидов", "Думский", "Дымов",
-                    "Егоров", "Ерошин", "Енотов", "Елкин", "Епифанцев", "Ежов",
-                    "Журавлёв", "Жуков", "Желтый", "Жарков", "Жилов",
-                    "Заяцев", "Зотов", "Заходеров", "Знаков", "Зеленицкий", "Завьялов",
-                    "Исаева", "Иванов", "Ильин", "Иноземцев", "Ирин",
-                    "Кабаков", "Кузнецов", "Кротов", "Кинков", "Kострыкин", "Козлов", "Кузин",
-                    "Лабанов", "Лесов", "Лапухов", "Ленин", "Летов", "Листьев",
-                    "Малинин", "Мамин", "Минин", "Меншёв", "Молочный", "Мослов", "Муров",
-                    "Назаров", "Новиков", "Носов", "Никифоров", "Никитин", "Негодин",
-                    "Орденов", "Образцов", "Орлов", "Обрядин", "Ослов",
-                    "Патрушев", "Петров", "Поликарпов", "Понкратов", "Пожарский", "Пронин", "Петухов",
-                    "Ранин", "Реутов", "Рознов", "Рябчиков", "Решаев",
-                    "Салов", "Селянин", "Скворцов", "Свиридов", "Стрельцов", "Сударев", "Синий", "Смольный",
-                    "Табаков", "Титов", "Тиховнов", "Таров", "Темник", "Tюленев", "Тихорецкий", "Топоров",
-                    "Усов", "Уваров", "Укесов", "Удочкин", "Упрямов",
-                    "Хабаров", "Ханин", "Хитров", "Хворов", "Ходоров", "Хрипов", "Хорошев", "Худов",
-                    "Цепин", "Цоболов", "Цурев", "Ципкин", "Цуканов",
-                    "Шарунов", "Шестов", "Шаповалов", "Щеголяев", "Шершнев", "Шукин",
-                    "Щебетов", "Щебатков", "Щекин", "Щипков",
-                    "Эронов",
-                    "Яковлев", "Якин", "Яшин", "Ямов", "Ярулин"
-            };
-
-            if (!isMale) {
-                String[] result = new String[fams.length];
-                for (int i = 0; i < fams.length; i++) {
-                    String fam = fams[i];
-                    if (fam.endsWith("ый")) {
-                        fams[i] = fam.replace("ый", "ая");
-                    } else if (fam.endsWith("ий")) {
-                        fams[i] = fam.replace("ый", "ая");
-                    } else {
-                        fams[i] = fam.concat("a");
-                    }
-                }
-                //return result;
-            }
-            return fams;
-        }
-
-        static String[] getArraySurnames(boolean isMale) {
-
-            String[] maleSurnames = getArrayNameMale();
-            String[] result = new String[maleSurnames.length];
-
-            for (int i = 0; i < maleSurnames.length; i++) {
-                String name = maleSurnames[i];
-                if (name.endsWith("ий")) {
-                    result[i] = name.replace("ий", isMale ? "ьевич" : "ьевна");
-                } else if (name.endsWith("й")) {
-                    result[i] = name.replace("й", isMale ? "евич" : "евна");
-                } else {
-                    result[i] = name.concat(isMale ? "ович" : "овна");
-                }
-            }
-
-            return result;
+        // Конструктор для внедрения Spring'ом
+        public FIO(FioService fioService) {
+            FIO.fioService = fioService;
         }
 
         static String randomName(int type, boolean isMale) {
 
-            String[] names = switch (type) {
-                case 1 -> getArrayFam(isMale);
-                case 2 -> (isMale ? getArrayNameMale() : getArrayNameFemale());
-                case 3 -> getArraySurnames(isMale);
-                default -> new String[]{""};
-
+            List<String> names = switch (type) {
+                case 1 -> (isMale ? listSurnamesMale : listSurnamesFemale);
+                case 2 -> (isMale ? listNamesMale : listNamesFemale);
+                case 3 -> (isMale ? listPatronymicsMale : listPatronymicsFemale);
+                default -> new ArrayList<>();
             };
 
-            return names[random.nextInt(names.length - 1)];
+            return names.get(random.nextInt(names.size() - 1));
         }
 
         public static Date randomDate() {
-            int yearRnd = random.nextInt(1930, 2008);
+            int yearRnd = random.nextInt(1950, 2008);
             int monthRnd = random.nextInt(1, 13);
             int dayRnd = random.nextInt(1, YearMonth.of(yearRnd, monthRnd).lengthOfMonth() + 1);
 
             return Date.valueOf(LocalDate.of(yearRnd, monthRnd, dayRnd));
+        }
+
+        public static String randomEmail(String firstName, String lastName) {
+
+            String[] DOMAINS = {
+                    "gmail.com", "yahoo.com", "hotmail.com", "mail.ru",
+                    "yandex.ru", "bk.ru", "list.ru", "inbox.ru"
+            };
+
+            String domain = DOMAINS[random.nextInt(DOMAINS.length)];
+            String separator = random.nextBoolean() ? "." : "_";
+            // Транслитерация кириллицы в латиницу
+
+            String latinFirstName = transliterate(firstName);
+            String latinLastName = transliterate(lastName);
+
+            String namePart = latinFirstName.toLowerCase(); // + separator + latinLastName.toLowerCase();
+
+            // С вероятностью 20% добавляем случайные цифры
+            //if (random.nextDouble() < 0.8) {
+            int number = random.nextInt(99999) + 1;
+                namePart += number;
+            //}
+
+            return String.format("%s@%s", namePart, domain);
+        }
+
+        public static Client randomClient() {
+
+            boolean isMale = random.nextBoolean();
+            String fam = randomName(1, isMale);
+            String im = randomName(2, isMale);
+            String ot = randomName(3, isMale);
+            Date dateOfBirth = randomDate();
+            String phoneNumber = randomPhoneNumber();
+            String Email = randomEmail(fam, im);
+            String Address = randomAddress();
+
+            Client client = Client.builder()
+                    .lastName(fam)
+                    .firstName(im)
+                    .patronymic(ot)
+                    .birthDate(dateOfBirth)
+                    .phoneNumber(phoneNumber)
+                    .emailAddress(Email)
+                    .address(Address)
+                    .comment("")
+                    .build();
+
+            return client;
+
+        }
+
+        @PostConstruct
+        public void init() {
+            // 1. Загружаем базовые списки имен и аамилии
+            listNamesMale = fioService.loadFioList("male_names_rus");
+            listNamesFemale = fioService.loadFioList("female_names_rus");
+            listSurnamesMale = fioService.loadFioList("male_surnames_rus");
+
+            // 2. Генерируем фамилии и отчества один раз при старте
+            listSurnamesFemale = generateFemaleSurnames(listSurnamesMale);
+
+            listPatronymicsMale = generatePatronymics(listNamesMale, true);
+            listPatronymicsFemale = generatePatronymics(listNamesMale, false);
         }
 
         public static String randomPhoneNumber() {
@@ -191,29 +149,12 @@ public class DemoUtils {
 
         }
 
-        public static String randomEmail(String firstName, String lastName) {
-
-            String[] DOMAINS = {
-                    "gmail.com", "yahoo.com", "hotmail.com", "mail.ru",
-                    "yandex.ru", "bk.ru", "list.ru", "inbox.ru"
-            };
-
-            String domain = DOMAINS[random.nextInt(DOMAINS.length)];
-            String separator = random.nextBoolean() ? "." : "_";
-            // Транслитерация кириллицы в латиницу
-
-            String latinFirstName = transliterate(firstName);
-            String latinLastName = transliterate(lastName);
-
-            String namePart = latinFirstName.toLowerCase(); // + separator + latinLastName.toLowerCase();
-
-            // С вероятностью 20% добавляем случайные цифры
-            if (random.nextDouble() < 0.8) {
-                int number = random.nextInt(99) + 1;
-                namePart += number;
-            }
-
-            return String.format("%s@%s", namePart, domain);
+        private List<String> generateFemaleSurnames(List<String> maleSurnames) {
+            return maleSurnames.stream().map(fam -> {
+                if (fam.endsWith("ый") || fam.endsWith("ий")) return fam.substring(0, fam.length() - 2).concat("ая");
+                if (fam.matches(".*(ов|ев|ин|ын)$")) return fam.concat("а");
+                return fam;
+            }).toList();
         }
 
         public static String transliterate(String cyrillic) {
@@ -263,28 +204,12 @@ public class DemoUtils {
             return result.toString();
         }
 
-        public static Client randomClient() {
-
-            boolean isMale = random.nextBoolean();
-            String fam = randomName(1, isMale);
-            String im = randomName(2, isMale);
-            Date dateOfBirth = randomDate();
-            String phoneNumber = randomPhoneNumber();
-            String Email = randomEmail(fam, im);
-            String Address = randomAddress();
-
-            Client client = Client.builder()
-                    .firstName(fam)
-                    .lastName(im)
-                    .birthDate(dateOfBirth)
-                    .phoneNumber(phoneNumber)
-                    .emailAddress(Email)
-                    .address(Address)
-                    .comment("")
-                    .build();
-
-            return client;
-
+        private List<String> generatePatronymics(List<String> maleNames, boolean isMale) {
+            return maleNames.stream().map(name -> {
+                if (name.endsWith("ий")) return name.substring(0, name.length() - 2).concat(isMale ? "ьевич" : "ьевна");
+                if (name.endsWith("й")) return name.substring(0, name.length() - 1).concat(isMale ? "евич" : "евна");
+                return name.concat(isMale ? "ович" : "овна");
+            }).toList();
         }
     }
 }

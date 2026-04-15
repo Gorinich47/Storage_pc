@@ -27,13 +27,18 @@
                     <input class="form-control" id="data-date-end" th:field="*{dateEnd}" type="date"/>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" for="data-client-id">Клиент:</label>
-                    <select class="form-select" id="data-client-id" required th:field="*{client}">
-                        <option value="">Выберите клиента</option>
-                        <option th:each="client : ${clients}"
-                                th:text="${client.firstName + ' ' + client.lastName}"
-                                th:value="${client.id}"></option>
-                    </select>
+                    <div th:insert="~{client_search :: client-search-fragment}"
+                         th:with="labelInput='Клиент (владелец счета)'">
+                    </div>
+                    <!-- Скрытое поле для связи счета с клиентом -->
+                    <!--                    <input type="hidden"-->
+                    <!--                           id="data-client-id"-->
+                    <!--                           th:name="client"-->
+                    <!--                           th:value="${selectedClient != null ? selectedClient.id : ''}"/>-->
+                    <input id="data-client-id"
+                           th:name="client"
+                           th:value="${object.client != null ? object.client.id : ''}"
+                           type="hidden"/>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="data-employee-id">Сотрудник:</label>
@@ -54,7 +59,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="data-sum-amount">Сумма (₽):</label>
-                    <input class="form-control" id="data-sum-amount" placeholder="Введите сумму" required
+                    <input class="form-control" id="data-sum-amount" placeholder="Сумма "
+                           readonly
                            step="0.01" th:field="*{sumAmount}" type="number"/>
                 </div>
 
@@ -80,10 +86,11 @@
                             <tr th:each="box : ${allboxes}">
                                 <td>
                                     <input class="form-check-input box-checkbox"
-                                           name="boxIds"
+                                           th:data-price="${box.price}"
                                            onchange="updateSelectedCount_account()"
                                            th:id="|box-${box.id}|"
                                            th:value="${box.id}"
+                                           th:name="boxIds"
                                            type="checkbox"/>
                                 </td>
                                 <td><label th:for="|box-${box.id}|" th:text="${box.idBox}"></label></td>

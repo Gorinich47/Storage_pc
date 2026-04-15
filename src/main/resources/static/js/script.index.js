@@ -2,10 +2,20 @@
 // Очищает форму при добавлении нового
 function clearForm(textLabelForm=''){
     const form = document.getElementById('edit_modal_form');
-     form.querySelectorAll('input').forEach(input => input.value = '');
+     form.querySelectorAll('input:not([type="checkbox"])').forEach(input => input.value = '');
      form.querySelectorAll('select').forEach(select => select.selectedIndex= 0);
-     form.querySelectorAll('.form-check-input').forEach(check=> check.value = false);
+
+     //form.querySelectorAll('.form-check-input').forEach(check=> {
+     //   check.value = false
+     //});
+      // ПРАВИЛЬНАЯ очистка чекбоксов
+     form.querySelectorAll('.form-check-input').forEach(check => {
+         check.checked = false; // Снимаем галочку
+         // Значение (value) менять НЕЛЬЗЯ, там лежит ID бокса!
+     });
+
      updateSelectedCount_account();
+
       if(textLabelForm!=''){
          document.getElementById('objectModalLabel').textContent = textLabelForm;
       }
@@ -116,10 +126,25 @@ function editModalForm(button, fragmentPath, textLabelForm='', isAccountEdit=fal
 // Обновление счётчика выбранных боксов
 function updateSelectedCount_account() {
     const isCountElem = document.getElementById('selectedCount');
+    const sumInput = document.getElementById('data-sum-amount'); // Поле суммы из инпута
+    const checkedBoxes = document.querySelectorAll('.box-checkbox:checked');
+
     if(isCountElem!=null){
-        const checkedBoxes = document.querySelectorAll('.box-checkbox:checked');
-        document.getElementById('selectedCount').textContent = checkedBoxes.length;
+        isCountElem.textContent = checkedBoxes.length;
+        //const checkedBoxes = document.querySelectorAll('.box-checkbox:checked');
+        //document.getElementById('selectedCount').textContent = checkedBoxes.length;
     }
+
+    // Обновляем сумму
+        if (sumInput != null) {
+            let totalSum = 0;
+            checkedBoxes.forEach(cb => {
+                // Читаем data-price, который мы добавили в HTML
+                const price = parseFloat(cb.getAttribute('data-price')) || 0;
+                totalSum += price;
+            });
+            sumInput.value = totalSum.toFixed(2);
+        }
 }
 // Выделение всех/снятие всех чекбоксов
 function toggleAllBoxes_account(source) {
@@ -195,6 +220,90 @@ async function saveRandomClient() {
 //`);
 
 function searchClients() {
+
+    const query = document.getElementById('clientSearchInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+
+    if (query.length < 2) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.style.display = 'none'; // Скрываем контейнер
+        noResults.style.display = 'none';
+        return;
+    }
+
+    fetch(`/client/search?query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(clients => {
+            resultsContainer.innerHTML = '';
+
+            if (clients.length === 0) {
+                noResults.style.display = 'block';
+                resultsContainer.style.display = 'none'; // Скрываем, если пусто
+                return;
+            }
+
+            noResults.style.display = 'none';
+            resultsContainer.style.display = 'block'; // Показываем список результатов
+
+            clients.forEach(client => {
+                // Создаем элемент списка
+                const formattedDate = client.birthDate
+                    ? new Date(client.birthDate).toLocaleDateString('ru-RU')
+                    : 'дата не указана';
+                const listItem = document.createElement('a');
+                listItem.className = 'list-group-item list-group-item-action';
+                listItem.href = '#';
+                listItem.innerHTML = `
+                        <div class="d-flex w-200 justify-content-between">
+                        <h6 class="mb-1">${client.lastName} ${client.firstName} ${client.patronymic} ${formattedDate}</h6>
+                    </div>
+
+                `;
+
+                listItem.onclick = function(e) {
+                    e.preventDefault();
+
+                    // 1. Обновляем инфо в форме (ваш метод)
+                    updateClientInfo(client.id);
+
+                    // 2. ЗАПИСЫВАЕМ ID В СКРЫТОЕ ПОЛЕ (чтобы форма отправила его на сервер)
+                    // у вашего <input type="hidden"> id именно 'selected-client-id'
+                    const hiddenInput = document.getElementById('data-client-id');
+                    if (hiddenInput) {
+                        hiddenInput.value = client.id;
+                    }
+
+                    // 2. Подставляем имя в инпут поиска для наглядности
+                    const input = document.getElementById('clientSearchInput');
+                    input.value = `${client.lastName} ${client.firstName} ${client.patronymic} ${formattedDate}`;
+                    //input.readOnly = true;
+                    input.classList.add('bg-light');
+
+                    // 3. Скрываем список результатов
+                    resultsContainer.style.display = 'none';
+                };
+
+                resultsContainer.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка при поиске:', error);
+            noResults.innerHTML = '<p class="text-danger small">Ошибка поиска</p>';
+            noResults.style.display = 'block';
+        });
+}
+
+// Чтобы список скрывался при клике мимо него
+document.addEventListener('click', function(e) {
+    const container = document.getElementById('searchResults');
+    const input = document.getElementById('clientSearchInput');
+    if (container && !container.contains(e.target) && e.target !== input) {
+        container.style.display = 'none';
+    }
+});
+
+function searchClients_2() {
     const query = document.getElementById('clientSearchInput').value.toLowerCase();
     const resultsContainer = document.getElementById('searchResults');
     const noResults = document.getElementById('noResults');
@@ -266,9 +375,18 @@ function updateClientInfo(clientId) {
         .catch(error => console.error('Ошибка:', error));
 }
 
+// Информация ниже окна поиска
 function clearClientInfo() {
     updateClientInfo(-1)
 }
+
+// Информация в строке поиска
+function clearClientSearch() {
+    updateClientInfo(-1)
+    const input = document.getElementById('clientSearchInput');
+    input.value = ``;
+}
+
 
 function updateRentedBoxes(button) {
 

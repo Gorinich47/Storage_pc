@@ -31,7 +31,7 @@
                 <td th:text="${@generalService.format(shedule.date, false)}"></td>
                 <td th:text="${@generalService.format(shedule.dateStart, false)}"></td>
                 <td th:text="${@generalService.format(shedule.dateEnd, false)}"></td>
-                <td th:text="${shedule.employee.firstName + ' ' + shedule.employee.lastName}"></td>
+                <td th:text="${shedule.employee.getFullName()}"></td>
                 <td>
                     <span class="badge bg-success" th:if="${shedule.isHoliday}">Выходной</span>
                     <span class="badge bg-secondary" th:unless="${shedule.isHoliday}">Рабочий</span>

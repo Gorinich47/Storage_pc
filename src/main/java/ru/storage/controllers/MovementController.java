@@ -50,7 +50,7 @@ public class MovementController {
         model.addAttribute("movements", movementService.getAll());
 
         model.addAttribute("accounts", accountService.getAll());
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null); //clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Movement());
         model.addAttribute("saveUrl", "/movement/save");
@@ -63,7 +63,7 @@ public class MovementController {
         model.addAttribute("object", movementService.getByIdOrNew(id));
         model.addAttribute("saveUrl", "/movement/save");
         model.addAttribute("accounts", accountService.getAll());
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null); //clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         return "movement_edit_modal :: content_modal_form";
     }

@@ -1,0 +1,37 @@
+<div th:fragment="client-search-fragment" xmlns:th="http://thymeleaf.org">
+
+    <label class="form-label" for="clientSearchInput" th:text="${labelInput}"></label>
+    <div class="position-relative">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-search"></i></span>
+            <input autocomplete="off"
+                   class="form-control"
+                   id="clientSearchInput"
+                   onkeyup="searchClients()"
+                   placeholder="Имя, телефон или email..."
+                   th:classappend="${selectedClient != null} ? 'bg-light'"
+                   th:readonly="${selectedClient != null}"
+                   th:value="${selectedClient != null} ?
+                         |${selectedClient.getFullName()}| : ''"
+                   type="text">
+            <!-- Кнопка очистки (крестик) -->
+            <button class="btn btn-outline-secondary"
+                    onclick="clearClientSearch()"
+                    type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Контейнер для результатов (выпадает под инпутом) -->
+        <div class="list-group position-absolute w-200 shadow-sm"
+             id="searchResults"
+             style="z-index: 1000; max-height: 250px; overflow-y: auto; display: none;">
+            <!-- Сюда JS вставит строки <a> -->
+        </div>
+    </div>
+
+    <!-- Блок "Ничего не найдено" -->
+    <div class="small text-danger mt-1" id="noResults" style="display: none;">
+        Клиент не найден
+    </div>
+</div>

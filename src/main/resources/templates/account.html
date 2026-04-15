@@ -41,8 +41,8 @@
                     <span class="badge bg-info me-1" th:each="box : ${@generalService.sotrByIdBox(account.box)}"
                           th:text="${box.idBox}"></span>
                 </td>
-                <td th:text="${account.client.firstName + ' ' + account.client.lastName}"></td>
-                <td th:text="${account.employee.firstName + ' ' + account.employee.lastName}"></td>
+                <td th:text="${account.client.getFullName()}"></td>
+                <td th:text="${account.employee.getFullName()}"></td>
                 <td>
                     <span th:switch="${account.statusBox}">
                         <span class="badge bg-success" th:case="'ACTIVE'">Активен</span>

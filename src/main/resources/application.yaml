@@ -7,6 +7,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 1000 # будем писать 300 записей за раз
+        order_inserts: true # вставлять записи в порядке их появления
     show-sql: true
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/Storage

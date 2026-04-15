@@ -3,10 +3,7 @@ package ru.storage.controllers;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +39,12 @@ public class ClientController {
                                 @RequestParam(required = false) String searchAll) {
 
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Order.asc("firstName"),
-                        Sort.Order.asc("lastName")).ascending());
+                Sort.by(Sort.Order.asc("lastName"),
+                                Sort.Order.asc("firstName"),
+                                Sort.Order.asc("patronymic"),
+                                Sort.Order.asc("birthDate")
+                        )
+                        .ascending());
 
         Page<Client> clientPage = clientService.searchOrAll(pageable, searchAll);
 
@@ -78,7 +79,8 @@ public class ClientController {
 
         List<Client> clientList = List.of();
         if (query != null || query.trim().length() >= 2) {
-            clientList = clientService.searchOrAll(query);
+            //"%" + query.toLowerCase() + "%"
+            clientList = clientService.searchOrAll(query, Limit.of(6));
         }
 
         return clientList;
@@ -98,6 +100,18 @@ public class ClientController {
         }
         session.setAttribute("selectedClient", client);
         model.addAttribute("selectedClient", client);
+        return "box_front :: client-details-fragment";
+    }
+
+    @GetMapping("/client/client-info/{id}")
+    public String getClientInfo(Model model, HttpSession session, @PathVariable Long id) {
+        Client client = null;
+        if (id > 0) {
+            client = clientService.getByIdOrNew(id); // Ваша логика поиска
+        }
+        session.setAttribute("selectedClient", client);
+        model.addAttribute("selectedClient", client);
+        model.addAttribute("label-input", "");
         return "box_front :: client-details-fragment";
     }
 

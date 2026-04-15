@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.storage.model.Price;
 import ru.storage.repo.PriceRepository;
 
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -29,4 +30,7 @@ public class PriceService extends BaseService<Price, PriceRepository> {
         return priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc();
     }
 
+    public List<Price> getAllByBoxId(List<Long> ids, Date date) {
+        return priceRepository.findAllByBoxIdIn(ids, date);
+    }
 }

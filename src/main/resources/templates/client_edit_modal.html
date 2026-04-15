@@ -15,10 +15,22 @@
         <div class="modal-body">
 
             <div class="mb-3">
-                <label class="form-label" for="data-first-name">Фамилия:</label>
+                <label class="form-label" for="data-last-name">Фамилия:</label>
+                <input class="form-control"
+                       id="data-last-name"
+                       placeholder="Введите фамилию"
+                       th:field="*{lastName}"
+                       type="text"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('lastName')}">
+                    <small th:errors="*{lastName}"></small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="data-first-name">Имя:</label>
                 <input class="form-control"
                        id="data-first-name"
-                       placeholder="Введите фамилию"
+                       placeholder="Введите имя"
                        th:field="*{firstName}"
                        type="text"/>
                 <div class="text-danger" th:if="${#fields.hasErrors('firstName')}">
@@ -27,14 +39,14 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="data-last-name">Имя:</label>
+                <label class="form-label" for="data-patronymic">Отчество:</label>
                 <input class="form-control"
-                       id="data-last-name"
-                       placeholder="Введите имя"
-                       th:field="*{lastName}"
+                       id="data-patronymic"
+                       placeholder="Введите отчество"
+                       th:field="*{patronymic}"
                        type="text"/>
-                <div class="text-danger" th:if="${#fields.hasErrors('lastName')}">
-                    <small th:errors="*{lastName}"></small>
+                <div class="text-danger" th:if="${#fields.hasErrors('patronymic')}">
+                    <small th:errors="*{patronymic}"></small>
                 </div>
             </div>
 

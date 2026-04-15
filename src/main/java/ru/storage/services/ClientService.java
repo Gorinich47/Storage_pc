@@ -1,6 +1,7 @@
 package ru.storage.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import ru.storage.model.Client;
 import ru.storage.repo.ClientRepository;
 import ru.storage.utils.DemoUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class ClientService extends BaseService<Client, ClientRepository> {
 
     @Override
     public List<Client> getAll() {
-        return clientRepository.findAllByOrderByFirstNameAscLastNameAsc();
+        return clientRepository.findAllByOrderByLastNameAscFirstNameAscPatronymicAscBirthDateAsc();
     }
 
     public List<Client> searchOrAll(String searchAll) {
@@ -37,6 +39,15 @@ public class ClientService extends BaseService<Client, ClientRepository> {
         List<Client> clientList = List.of();
         if (searchAll != null && !searchAll.trim().isEmpty()) {
             clientList = clientRepository.findBySearchIgnoreCase(searchAll);
+        }
+        return clientList;
+    }
+
+    public List<Client> searchOrAll(String searchAll, Limit limit) {
+
+        List<Client> clientList = List.of();
+        if (searchAll != null && !searchAll.trim().isEmpty()) {
+            clientList = clientRepository.findBySearchIgnoreCase(searchAll, limit);
         }
         return clientList;
     }
@@ -54,9 +65,13 @@ public class ClientService extends BaseService<Client, ClientRepository> {
     }
 
     public void generateClients() {
-        for (int i = 0; i < 10; i++) {
-            Client randomClient = DemoUtils.FIO.randomClient();
-            clientRepository.save(randomClient);
+        List<Client> clients = new ArrayList<>();
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 1000; j++) {
+                clients.add(DemoUtils.FIO.randomClient());
+            }
+            clientRepository.saveAll(clients);
+            clients.clear();
         }
     }
 }

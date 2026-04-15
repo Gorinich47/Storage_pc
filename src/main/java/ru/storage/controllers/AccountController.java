@@ -46,7 +46,7 @@ public class AccountController {
         model.addAttribute("accounts", accountService.getAll());
         model.addAttribute("allboxes", boxService.getAll());
         model.addAttribute("curboxes", new ArrayList<Box>());
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null); //clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
         model.addAttribute("saveUrl", "/account/save");
@@ -60,12 +60,15 @@ public class AccountController {
 
         Account account = accountService.getByIdOrNew(id);
 
-        model.addAttribute("clients", clientService.getAll());
+        model.addAttribute("clients", null); //clientService.getAll());
+        model.addAttribute("selectedClient", account.getClient());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", account); // для формы
         model.addAttribute("curboxes", account.getBox());
         model.addAttribute("allboxes", boxService.getAll());
         model.addAttribute("saveUrl", "/account/save");
+        model.addAttribute("labelInput", "Клиент:");
+        model.addAttribute("sumPrepayment", 0.0);
 
         return "account_edit_modal :: content_modal_form";
     }
@@ -74,8 +77,10 @@ public class AccountController {
     @PostMapping("/account/save")
     public String saveAccount(
             @ModelAttribute Account object,
+            //    @ModelAttribute Client selectedClient,
             @RequestParam(value = "boxIds", required = false) Long[] boxIds) {
 
+        //       object.setClient(selectedClient);
         accountService.save(object, boxIds);
 
         return "redirect:/account"; // /list?openTab=account";

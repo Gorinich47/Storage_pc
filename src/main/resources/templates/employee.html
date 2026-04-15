@@ -20,6 +20,7 @@
                 <th>ID</th>
                 <th>Фамилия</th>
                 <th>Имя</th>
+                <th>Отчество</th>
                 <th>Дата рождения</th>
                 <th>Телефон</th>
                 <th>Email</th>
@@ -34,8 +35,9 @@
             <tbody>
             <tr th:each="employee : ${employees}">
                 <td th:text="${employee.id}"></td>
-                <td th:text="${employee.firstName}"></td>
                 <td th:text="${employee.lastName}"></td>
+                <td th:text="${employee.firstName}"></td>
+                <td th:text="${employee.patronymic}"></td>
                 <td th:text="${#dates.format(employee.birthDate, 'dd.MM.yyyy')}"></td>
                 <td th:text="${employee.phoneNumber}"></td>
                 <td th:text="${employee.emailAddress}"></td>
@@ -53,8 +55,9 @@
                             data-bs-toggle="modal"
                             onclick="editModalForm(this,'/employee/fragments/client_edit_modal','Редактировать сотрудника')"
                             th:attr="data-id=${employee.id},
-                                 data-first-name=${employee.firstName},
                                  data-last-name=${employee.lastName},
+                                 data-first-name=${employee.firstName},
+                                 data-patronymic=${employee.patronymic},
                                  data-birth-date=${#dates.format(employee.birthDate, 'yyyy-MM-dd')},
                                  data-phone-number=${employee.phoneNumber},
                                  data-email=${employee.emailAddress},

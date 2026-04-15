@@ -19,6 +19,7 @@ import java.sql.Date;
 public class Person {
     private final String firstName;
     private final String lastName;
+    private String patronymic;
     private final Date birthDate;
     private final String phoneNumber;
     private final String emailAddress;
@@ -28,7 +29,13 @@ public class Person {
     private Long id;
 
 
-    public Person(String firstName, String lastName, Date birthDate, String phoneNumber, String emailAddress, String address) {
+    public Person(String lastName,
+                  String firstName,
+                  String patronymic,
+                  Date birthDate,
+                  String phoneNumber,
+                  String emailAddress,
+                  String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -38,7 +45,7 @@ public class Person {
     }
 
     public String getFullName() {
-        return String.format("%s %s %td.%tm.%tY", firstName, lastName, birthDate, birthDate, birthDate);
+        return String.format("%s %s %s %td.%tm.%tY", lastName, firstName, patronymic, birthDate, birthDate, birthDate);
     }
 
 }
