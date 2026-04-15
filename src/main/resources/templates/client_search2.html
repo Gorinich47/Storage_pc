@@ -1,0 +1,55 @@
+<div th:fragment="client-search-fragment" xmlns:th="http://www.thymeleaf.org">
+    <!-- Кнопка для открытия модального окна поиска -->
+    <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-outline-secondary w-100"
+                data-bs-target="#searchClientModal"
+                data-bs-toggle="modal"
+                type="button">
+            <i class="bi bi-search"></i> Найти клиента
+        </button>
+        <button class="btn btn-outline-danger"
+                data-bs-placement="top"
+                data-bs-toggle="tooltip"
+                onclick="clearClientInfo()"
+                title="Очистить выбор клиента"
+                type="button">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- Модальное окно поиска клиента Фрагмент-->
+    <div aria-hidden="true"
+         aria-labelledby="searchClientModalLabel"
+         class="modal fade"
+         id="searchClientModal"
+         tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchClientModalLabel">Поиск клиента</h5>
+                    <button aria-label="Закрыть" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input class="form-control"
+                               id="clientSearchInput"
+                               onkeyup="searchClients()"
+                               placeholder="Введите имя, фамилию, телефон или email..."
+                               type="text">
+                    </div>
+                    <div class="list-group" id="searchResults">
+                        <!-- Результаты поиска будут добавляться сюда динамически -->
+                    </div>
+                    <div class="text-center text-muted mt-3" id="noResults" style="display: none;">
+                        <i class="bi bi-search" style="font-size: 3rem;"></i>
+                        <p class="mt-2 mb-0">Клиент не найден</p>
+                        <small>Попробуйте изменить поисковый запрос</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
