@@ -51,7 +51,7 @@
                                         <div class="col-6">
                                             <div class="small text-muted">Цена</div>
                                             <div><strong
-                                                    th:text="${#numbers.formatDecimal(box.price, 0, 'COMMA', 0, 'POINT')}"></strong>
+                                                    th:text="${box.price}"></strong>
                                                 ₽
                                             </div>
                                         </div>
@@ -122,7 +122,6 @@
                         Боксы не найдены.
                     </div>
 
-                    <!-- Пагинация -->
                     <!-- Пагинация (теперь тоже внутри фрагмента) -->
                     <div class="mt-4" th:if="${totalPages > 1}">
                         <ul class="pagination justify-content-center">
@@ -161,21 +160,13 @@
                     <div class="card-body" id="info-client-block">
                         <!-- Вставка фрагмента поиска клиента -->
                         <div th:insert="~{client_search :: client-search-fragment}"></div>
-                        <!--                        th:insert="~{box_edit_modal :: content_modal_form}-->
                         <!-- Блок клиента -->
                         <div id="client-info-container"> <!-- скрытие блока style="display: none;"> -->
                             <div id="client-info-fields"
                                  th:fragment="client-details-fragment">
                                 <!-- При обновлении через fetch делаем блок видимым -->
                                 <div th:if="${selectedClient != null}">
-                                    <h6 class="mb-3" id="info-client-block-fio"
-                                        th:text="${selectedClient.lastName + ' ' + selectedClient.firstName}"></h6>
-                                    <div class="mb-3">
-                                        <strong>Дата рождения:</strong>
-                                        <span class="text-muted"
-                                              id="info-client-block-dr"
-                                              th:text="${#dates.format(selectedClient.birthDate, 'dd.MM.yyyy')}"></span>
-                                    </div>
+
                                     <div class="mb-2">
                                         <strong>Телефон:</strong>
                                         <span class="text-muted" id="info-client-block-phone"
@@ -192,24 +183,6 @@
                                         <strong>Адрес:</strong>
                                         <span class="text-muted" id="info-client-block-addr"
                                               th:text="${selectedClient.address}"></span>
-                                    </div>
-                                    <div>
-                                        <!--                            &lt;!&ndash; Кнопки действий с клиентом &ndash;&gt;-->
-                                        <!--                            <div class="d-grid gap-2">-->
-                                        <!--                                <button class="btn btn-sm btn-warning"-->
-                                        <!--                                        data-bs-target="#clientModal"-->
-                                        <!--                                        data-bs-toggle="modal"-->
-                                        <!--                                        onclick="editModalForm(this, '/client/fragments/client_edit_modal', 'Редактировать клиента')"-->
-                                        <!--                                        th:attr="data-id=${selectedClient.id}"-->
-                                        <!--                                        type="button">-->
-                                        <!--                                    Редактировать профиль-->
-                                        <!--                                </button>-->
-                                        <!--                                <button class="btn btn-sm btn-info"-->
-                                        <!--                                        type="button"-->
-                                        <!--                                        onclick="showClientAccounts()">-->
-                                        <!--                                    Просмотреть счета-->
-                                        <!--                                </button>-->
-                                        <!--                            </div>-->
                                     </div>
                                 </div>
                                 <div class="text-muted small" th:unless="${selectedClient != null}">
@@ -234,8 +207,13 @@
                         <h5 class="mb-0">Арендованные боксы</h5>
                     </div>
                     <div class="card-body">
+
                         <div th:if="${rentedBoxes != null and !rentedBoxes.empty}">
-                            <div class="list-group list-group-flush" id="rentedBoxesList">
+                            <!-- Добавил прокрутку-->
+                            <div class="list-group list-group-flush"
+                                 id="rentedBoxesList"
+                                 style="max-height: 190px; overflow-y: auto; overflow-x: hidden;">
+
                                 <div class="list-group-item d-flex justify-content-between align-items-center"
                                      th:each="box : ${rentedBoxes}">
                                     <div>
@@ -244,17 +222,38 @@
                                     </div>
                                     <span class="badge bg-primary rounded-pill"
                                           th:text="${box.price} + ' ₽'"></span>
+
+                                    <!-- Кнопка удаления -->
+                                    <button class="btn btn-outline-danger btn-sm border-0"
+                                            onclick="removeBoxFromRent(this)"
+                                            th:attr="data-id=${box.id}"
+                                            type="button">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
+
                             </div>
                             <div class="mt-3">
-                                <button class="btn btn-sm btn-outline-success w-100" type="button">
-                                    Всего: <span th:text="${rentedBoxes.size()}"></span> бокс(ов)
+                                <button class="btn btn-sm btn-outline-success w-100"
+                                        data-bs-target="#boxModal"
+                                        data-bs-toggle="modal"
+                                        onclick="rentBoxId(this)"
+                                        th:attr="data-id=${rentedBoxes != null ? rentedBoxes.![id] : '[]'},
+                                                data-client-id=${selectedClient != null ? selectedClient.id :''},
+                                                data-id-context-form=1"
+                                        type="button">
+                                    Всего:
+                                    <span th:text="${rentedBoxes.size()}"></span>
+                                    бокс(ов)
+                                    <span th:text="${#aggregates.sum(rentedBoxes.![price]) ?: 0}"></span>
+                                    руб.
                                 </button>
                             </div>
                         </div>
 
                         <!-- Сообщение при отсутствии арендованных боксов -->
-                        <div class="text-center text-muted" th:if="${rentedBoxes == null or rentedBoxes.empty}">
+                        <div class="text-center text-muted"
+                             th:if="${rentedBoxes == null or rentedBoxes.empty}">
                             <i class="bi bi-box" style="font-size: 3rem;"></i>
                             <p class="mt-2 mb-0">Нет арендованных боксов</p>
                             <small>У выбранного клиента пока нет аренды</small>
@@ -280,5 +279,6 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>

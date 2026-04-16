@@ -105,15 +105,36 @@ public class BoxController {
         return "box_front :: rented-boxes-fragment";
     }
 
+    @PostMapping("/box/rent-remove/{id}")
+    public String removeRentBox(Model model, @PathVariable Long id, HttpSession session) {
+        // Получаем текущий список из сессии или создаем новый
+        List<Box> selectedBoxes = (List<Box>) session.getAttribute("selectedBoxes");
+        if (selectedBoxes == null) {
+            selectedBoxes = new ArrayList<>();
+        }
+
+        // Проверяем, нет ли его уже в списке, и добавляем (поиск в базе только для получения данных объекта)
+        if (!selectedBoxes.isEmpty()) {
+            selectedBoxes.removeIf(b -> b.getId().equals(id));
+        }
+
+        session.setAttribute("selectedBoxes", selectedBoxes);
+        model.addAttribute("rentedBoxes", selectedBoxes);
+
+        return "box_front :: rented-boxes-fragment";
+    }
+
     // Фрагменты Бокс
     // форма добавление счета (аренда)
     @GetMapping("/box/fragments/account_edit_modal")
-    public String getAccountEditModal(Model model, @RequestParam(required = false) Long id) {
+    public String getAccountEditModal(Model model,
+                                      @RequestParam(required = false) Long[] id) {
+
         model.addAttribute("clients", clientService.getAll());
         model.addAttribute("employees", employeeService.getAll());
         model.addAttribute("object", new Account()); // для формы
         model.addAttribute("allboxes", boxService.getAll());
-        model.addAttribute("curboxes", boxService.getByListId(id));
+        model.addAttribute("curboxes", boxService.getByListId(List.of(id)));
         model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";

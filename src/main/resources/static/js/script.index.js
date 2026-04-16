@@ -73,17 +73,30 @@ function setAttribytesFromArray(dataAttributes){
 // Устанавливает ID для аренды
 function rentBoxId(button) {
 
-    const id = button.getAttribute('data-id');
+    const rawData  = button.getAttribute('data-id');
+    let ids;
+
+    try {
+        // Пробуем распарсить как JSON (например, "[1,2,3]")
+        ids = JSON.parse(rawData);
+        // Если распарсилось число, а не массив, оборачиваем его
+        if (!Array.isArray(ids)) {
+            ids = [ids];
+        }
+    } catch (e) {
+        // Если это не JSON (простая строка/число), создаем массив из 1 элемента
+        // Используем Number(), чтобы в массиве были числа, а не строки
+        ids = rawData ? [Number(rawData)] : [];
+    }
 
     // Создаем временный элемент для загрузки нового содержимого
-    fetch('/box/fragments/account_edit_modal?id='+id)
+    fetch(`/box/fragments/account_edit_modal?id=${ids.join(',')}`)
         .then(response => {
             if (!response.ok) throw new Error('Ошибка сети');
             return response.text(); // Получаем HTML как текст
         })
         .then(html => {
             document.getElementById('content-modal-form-id').innerHTML = html;
-
             // Установка выбранных боксов из boxes-edit
             setCheckedBoxes_account();
             // Обновляем счётчик
@@ -92,6 +105,8 @@ function rentBoxId(button) {
     )
     .catch(error => console.error('Error loading fragment:', error));
 }
+
+
 // Заполняет форму редактирования
 function editModalForm(button, fragmentPath, textLabelForm='', isAccountEdit=false, prefix='data-',strReplace='' ,toCamelCase=false){
     const id = button.getAttribute('data-id');
@@ -405,6 +420,28 @@ function updateRentedBoxes(button) {
         .catch(error => console.error('Ошибка:', error));
 }
 
+function removeBoxFromRent(button) {
+
+    const boxId = button.getAttribute('data-id');
+    if (!confirm('Удалить этот бокс из аренды?')) return;
+
+    fetch(`/box/rent-remove/${boxId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка при удалении');
+            return response.text();
+        })
+        .then(html => {
+            // Заменяем содержимое контейнера новым HTML от сервера
+            // Сервер сам пришлет обновленный список, сумму и счетчик
+            document.getElementById('rented-boxes-container').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Не удалось удалить бокс');
+        });
+}
 
 function formatDate(dateString) {
     if (!dateString) return '';
