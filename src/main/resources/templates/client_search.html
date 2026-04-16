@@ -1,9 +1,13 @@
 <div th:fragment="client-search-fragment" xmlns:th="http://thymeleaf.org">
 
-    <label class="form-label" for="clientSearchInput" th:text="${labelInput}"></label>
+    <label class="form-label"
+           for="clientSearchInput"
+           th:if="${labelInput != null and labelInput != ''}"
+           th:text="${labelInput}"></label>
     <div class="position-relative">
         <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-person-search"></i></span>
+            <span class="input-group-text">
+                <i class="bi bi-person-search"></i></span>
             <input autocomplete="off"
                    class="form-control"
                    id="clientSearchInput"
