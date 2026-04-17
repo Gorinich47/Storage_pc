@@ -165,6 +165,10 @@
                             <div id="client-info-fields"
                                  th:fragment="client-details-fragment">
                                 <!-- При обновлении через fetch делаем блок видимым -->
+                                <!--                                <input id="data-client-id"-->
+                                <!--                                       th:name="client"-->
+                                <!--                                       th:value="${selectedClient != null ? selectedClient : ''}"-->
+                                <!--                                       type="hidden"/>-->
                                 <div th:if="${selectedClient != null}">
 
                                     <div class="mb-2">
@@ -239,7 +243,7 @@
                                         data-bs-toggle="modal"
                                         onclick="rentBoxId(this)"
                                         th:attr="data-id=${rentedBoxes != null ? rentedBoxes.![id] : '[]'},
-                                                data-client-id=${selectedClient != null ? selectedClient.id :''},
+                                                data-id-client=${selectedClient != null ? selectedClient.id :''},
                                                 data-id-context-form=1"
                                         type="button">
                                     Всего:

@@ -33,4 +33,8 @@ public class PriceService extends BaseService<Price, PriceRepository> {
     public List<Price> getAllByBoxId(List<Long> ids, Date date) {
         return priceRepository.findAllByBoxIdIn(ids, date);
     }
+
+    public Double getTotalSum(List<Long> ids, Date date) {
+        return priceRepository.findAllByBoxIdInSum(ids, date);
+    }
 }

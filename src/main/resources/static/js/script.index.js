@@ -73,6 +73,7 @@ function setAttribytesFromArray(dataAttributes){
 // Устанавливает ID для аренды
 function rentBoxId(button) {
 
+    //const idClient  = button.getAttribute('data-id-client');
     const rawData  = button.getAttribute('data-id');
     let ids;
 
@@ -90,7 +91,8 @@ function rentBoxId(button) {
     }
 
     // Создаем временный элемент для загрузки нового содержимого
-    fetch(`/box/fragments/account_edit_modal?id=${ids.join(',')}`)
+    //fetch(`/box/fragments/account_edit_modal?clientId=${idClient}&boxIds=${ids.join(',')}`)
+    fetch(`/box/fragments/account_edit_modal?boxIds=${ids.join(',')}`)
         .then(response => {
             if (!response.ok) throw new Error('Ошибка сети');
             return response.text(); // Получаем HTML как текст

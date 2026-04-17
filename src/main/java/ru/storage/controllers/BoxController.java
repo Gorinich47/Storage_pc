@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
+import ru.storage.model.Client;
 import ru.storage.services.*;
 
 import java.util.ArrayList;
@@ -127,14 +128,21 @@ public class BoxController {
     // Фрагменты Бокс
     // форма добавление счета (аренда)
     @GetMapping("/box/fragments/account_edit_modal")
-    public String getAccountEditModal(Model model,
-                                      @RequestParam(required = false) Long[] id) {
+    public String getAccountEditModal(Model model, HttpSession session,
+                                      //@RequestParam Long clientId,
+                                      @RequestParam(required = false) Long[] boxIds) {
 
-        model.addAttribute("clients", clientService.getAll());
+        Client selectedClient = (Client) session.getAttribute("selectedClient");
+        Account account = Account.builder()
+                .client(selectedClient)
+                .build();
+
+        model.addAttribute("clients", null); //clientService.getAll());
+        model.addAttribute("selectedClient", selectedClient); //clientService.getByIdOrNew(clientId));
         model.addAttribute("employees", employeeService.getAll());
-        model.addAttribute("object", new Account()); // для формы
+        model.addAttribute("object", account); // для формы
         model.addAttribute("allboxes", boxService.getAll());
-        model.addAttribute("curboxes", boxService.getByListId(List.of(id)));
+        model.addAttribute("curboxes", boxService.getByListId(List.of(boxIds)));
         model.addAttribute("saveUrl", "/account/save");
 
         return "account_edit_modal :: content_modal_form";

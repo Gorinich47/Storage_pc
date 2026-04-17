@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.storage.enums.StatusBox;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +46,8 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false, updatable = false)
     private Employee employee;
-    private double sumAmount; /* сумма счета*/
+    @Column(name = "sum_amount", precision = 17, scale = 2)
+    private BigDecimal sumAmount; /* сумма счета*/
 
     public String getName() {
         return String.format("№%s от %s ", this.id.toString(), this.date.toLocalDate().toString());

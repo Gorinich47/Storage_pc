@@ -14,8 +14,14 @@ public interface PriceRepository extends JpaRepository<Price, Long>, JpaSpecific
     String PRICE_FOR_BOX_AND_CURRENT_DATE = """
             SELECT p
             FROM Price p
-            WHERE p.box.id IN :boxIds 
-                AND :date BETWEEN dateStart and coalesce(dateEnd,'2099-12-31')         
+            WHERE p.box.id IN :boxIds
+                AND :date BETWEEN dateStart and coalesce(dateEnd,'2099-12-31')
+            """;
+    String TOTAL_PRICE_FOR_BOX_AND_CURRENT_DATE = """
+            SELECT ROUND(SUM(p.sumPrice),2) as total
+            FROM Price p
+            WHERE p.box.id IN :boxIds
+                AND :date BETWEEN dateStart and coalesce(dateEnd,'2099-12-31')
             """;
     //List<Price> findAllOrderById();
     List<Price> findAllByOrderByBoxAscDateStartAscDateEndAsc();
@@ -24,4 +30,7 @@ public interface PriceRepository extends JpaRepository<Price, Long>, JpaSpecific
     List<Price> findAllByBoxIdIn(@Param("boxIds") List<Long> boxIds,
                                  @Param("date") Date dateNow);
 
+    @Query(TOTAL_PRICE_FOR_BOX_AND_CURRENT_DATE)
+    Double findAllByBoxIdInSum(@Param("boxIds") List<Long> boxIds,
+                               @Param("date") Date dateNow);
 }
