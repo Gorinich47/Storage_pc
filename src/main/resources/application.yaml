@@ -3,19 +3,29 @@ spring:
     name: demo
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # обновление БД
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        #        dialect: org.hibernate.dialect.PostgreSQLDialect # определяется автоматически по JDBC URL.
         jdbc:
-          batch_size: 1000 # будем писать 300 записей за раз
+          batch_size: 1000 # будем писать 1000 записей за раз, используется в генераторе клиентов
         order_inserts: true # вставлять записи в порядке их появления
-    show-sql: true
+    show-sql: true # показывать запросы, для анализа
+    open-in-view: false # отключим автоматическое поддержание сессии Hibernate открытым на протяжении всего жизненного цикла HTTP
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/Storage
     username: postgres
     password: 2133
     driver-class-name: org.postgresql.Driver
+
+  data: # добавил кеширование
+    redis:
+      #      host: localhost
+      #      port: 6379
+      # Заменяем жесткий localhost на переменную окружения
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 #  server:
 #    port: 8443
 #    ssl:

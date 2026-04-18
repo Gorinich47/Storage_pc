@@ -1,0 +1,110 @@
+# docker-compose.yml — определяет сервисы для разработки и тестирования.
+
+#Что нужно сделать:
+#  - Настроить сервисы для:
+#      - PostgreSQL (или MySQL) с начальной базой.
+#      - Приложения Spring Boot (если нужно).
+#  - Открыть нужные порты (например, 5432, 8080).
+#  - Настроить volume для хранения данных БД.
+
+#version: '3.8' - версия, сейчас не используется 2026г
+
+services:
+
+  # PostgreSQL
+  postgres-db:
+    image: postgres:18-alpine
+    container_name: storage_postgres
+    environment:
+      POSTGRES_DB: Storage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2133
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "15432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    #      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # PostgreSQL GUI Tool
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4:7
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  # Redis хранилище
+  redis:
+    image: redis:latest
+    container_name: storage-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  # Наш Web сервис
+  app-web-storage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: client:0.0.1
+    #    # Параметры деплоя на сервере
+    #    deploy:
+    #      resources:
+    #        limits:
+    #          cpus: '0.50'     # Не более 50% одного ядра
+    #          memory: 512M     # Не более 512 МБ оперативной памяти
+    #        reservations:
+    #          memory: 128M     # Зарезервировать минимум 128 МБ
+    depends_on:
+      - postgres-db
+      - redis  # Добавляем зависимость от Redis
+    environment:
+      - JAVA_OPTS=-Djava.net.preferIPv4Stack=true # принудительного использования IPv4
+      - SERVER_PORT=8088
+      - POSTGRES_HOST=postgres-db  # Указываем имя сервиса БД
+      - REDIS_HOST=redis           # Указываем имя сервиса Redis
+      # SPRING_DATASOURCE_URL уже настроен в YAML через POSTGRES_HOST
+      #      # Имя базы в URL должно совпадать с POSTGRES_DB (Storage)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/Storage
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2133
+    #      # Обязательно указываем хост Redis (имя сервиса из compose)
+    #      - SPRING_DATA_REDIS_HOST=redis
+    #      - SPRING_DATA_REDIS_PORT=6379
+
+    ports:
+      - "8088:8088"
+    restart: always
+
+# Всё прописано в application.yaml, при желании можно использовать переменные окружений
+#        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:15432/Storage
+#        SPRING_DATASOURCE_USERNAME: postgres
+#        SPRING_DATASOURCE_PASSWORD: 2143
+#        SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#        SECURITY_JWT_SECRET_KEY: k3R8nh9sZ7v5wWmQ2xP1aB6cD4eF7gH0iJ9kL3mN5oQ=
+
+
+#Пока без healthcheck
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+
+# Создание томов для контейнеров
+volumes:
+  redis_data:
+  db-data:
+  pgadmin-data:
+
+# docker-compose up и всё должно взлететь (обычно)

@@ -1,6 +1,7 @@
 package ru.storage.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.storage.model.Employee;
 import ru.storage.repo.EmployeeRepository;
@@ -25,6 +26,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeRepository> {
     }
 
     @Override
+    @Cacheable(value = "employees", key = "'all_employees'")
     public List<Employee> getAll() {
         return employeeRepository.findAllByOrderByLastNameAscFirstNameAscPatronymicAscBirthDateAsc();
     }

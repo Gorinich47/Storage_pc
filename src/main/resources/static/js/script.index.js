@@ -30,7 +30,20 @@ function setDeleteId(button) {
 
     document.getElementById('textFormQuestion').textContent = 'Вы действительно хотите удалить '+data_form_question_object;
     document.getElementById('objectNameFormQuestion').textContent = data_form_question_name;
-    document.getElementById('confirmDeleteBtn').href = '/'+object_from_url_delete+'/delete?id=' + id;
+    //document.getElementById('confirmDeleteBtn').href = '/'+object_from_url_delete+'/delete?id=' + id;
+    // Вместо href удаления
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    deleteBtn.onclick = function() {
+        fetch(`/${object_from_url_delete}/delete?id=${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url; // делаем редирект, если сервер прислал "redirect:/"
+            } else {
+                location.reload(); // или просто обновляем страницу
+            }
+        });
+    };
 }
 
 // Заполнение формы по атрибутам

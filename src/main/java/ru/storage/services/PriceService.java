@@ -1,6 +1,7 @@
 package ru.storage.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.storage.model.Price;
 import ru.storage.repo.PriceRepository;
@@ -26,6 +27,7 @@ public class PriceService extends BaseService<Price, PriceRepository> {
     }
 
     @Override
+    @Cacheable(value = "prices", key = "'all_prices'")
     public List<Price> getAll() {
         return priceRepository.findAllByOrderByBoxAscDateStartAscDateEndAsc();
     }
