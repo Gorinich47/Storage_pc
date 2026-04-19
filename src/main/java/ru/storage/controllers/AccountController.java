@@ -3,10 +3,7 @@ package ru.storage.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.storage.model.Account;
 import ru.storage.model.Box;
 import ru.storage.services.*;
@@ -87,7 +84,7 @@ public class AccountController {
     }
 
     // Удаление счета
-    @GetMapping("/account/delete")
+    @DeleteMapping("/account/delete")
     public String deleteAccount(@RequestParam Long id) {
         if (id != null) {
             accountService.delete(id);

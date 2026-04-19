@@ -123,7 +123,7 @@ public class ClientController {
     }
 
     // Удаление бокса
-    @GetMapping("/client/delete")
+    @DeleteMapping("/client/delete")
     public String deleteClient(@RequestParam Long id) {
         clientService.delete(id);
         return "redirect:/client";

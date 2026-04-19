@@ -1,6 +1,7 @@
 package ru.storage.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.storage.model.Employee;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Service
 //@RequiredArgsConstructor
+@CacheConfig(cacheNames = "employees") // Теперь BaseService знает, что чистить "prices"
 public class EmployeeService extends BaseService<Employee, EmployeeRepository> {
 
     private final EmployeeRepository employeeRepository;
@@ -26,7 +28,12 @@ public class EmployeeService extends BaseService<Employee, EmployeeRepository> {
     }
 
     @Override
-    @Cacheable(value = "employees", key = "'all_employees'")
+    public String getCacheName() {
+        return "employees"; // Включаем очистку кэша для сотрудников
+    }
+
+    @Override
+    @Cacheable(key = "'all_employees'")
     public List<Employee> getAll() {
         return employeeRepository.findAllByOrderByLastNameAscFirstNameAscPatronymicAscBirthDateAsc();
     }

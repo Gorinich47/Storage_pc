@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.storage.model.Shedule;
 import ru.storage.services.EmployeeService;
 import ru.storage.services.GeneralService;
@@ -67,7 +64,7 @@ public class SheduleController {
     }
 
     // Удалить тариф
-    @GetMapping("/shedule/delete")
+    @DeleteMapping("/shedule/delete")
     public String deleteShedule(@RequestParam Long id) {
         sheduleService.delete(id);
         return "redirect:/shedule";
