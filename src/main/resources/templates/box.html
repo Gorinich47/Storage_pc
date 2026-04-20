@@ -4,30 +4,32 @@
         <h2>Список боксов</h2>
 
         <!-- Форма поиска -->
-        <form class="mb-4" method="get" th:action="@{/}">
-            <div class="row g-3">
-                <div class="col-md-3">
+        <form class="mb-4" method="get" th:action="@{/box}">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <!-- Поле ввода -->
                     <input class="form-control"
                            name="searchAll"
-                           placeholder="Поиск по ID"
+                           placeholder="Поиск по ID..."
                            th:value="${#strings.isEmpty(param.searchAll) ? '' : param.searchAll}"
                            type="text"/>
-                </div>
-                <!--                <div class="col-md-1">-->
-                <!--                    <input type="text"-->
-                <!--                           name="searchSq"-->
-                <!--                           class="form-control"-->
-                <!--                           placeholder="Поиск по площади"-->
-                <!--                           th:value="${#strings.isEmpty(param.searchSq) ? '' : param.searchSq}"/>-->
-                <!--                </div>-->
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" type="submit">Найти</button>
-                </div>
-                <div class="col-md-2">
-                    <a class="btn btn-secondary w-100" th:href="@{/}">Сбросить</a>
+
+                    <!-- 1. Кнопка поиска ДОЛЖНА быть первой после input для корректного срабатывания Enter -->
+                    <button class="btn btn-primary" id="button-search" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+
+                    <!-- 2. Кнопка сброса идет следом -->
+                    <a class="btn btn-outline-secondary"
+                       id="button-reset"
+                       th:href="@{/box}"
+                       th:if="${not #strings.isEmpty(param.searchAll)}">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
                 </div>
             </div>
         </form>
+
 
         <!-- Кнопка открытия модального окна добавления -->
         <button class="btn btn-primary mb-3" data-bs-target="#boxModal"

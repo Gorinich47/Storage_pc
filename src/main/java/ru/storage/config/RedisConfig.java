@@ -22,15 +22,16 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
 
-/*       Jackson2JsonRedisSerializer - Deprecated(since = "4.0", forRemoval = true)
+/*      Jackson2JsonRedisSerializer - Deprecated(since = "4.0", forRemoval = true)
         GenericJackson2JsonRedisSerializer - Deprecated(since = "4.0", forRemoval = true)
 */
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(RedisSerializer.string());
-        template.setValueSerializer(RedisSerializer.json()); // Актуально для всех типов объектов
 
-        return template;
+        RedisTemplate<String, Object> template = new RedisTemplate<>(); // Создаем экземпляр шаблона для взаимодействия с Redis
+        template.setConnectionFactory(connectionFactory); // Устанавливаем соединение (коннект) с сервером Redis
+        template.setKeySerializer(RedisSerializer.string()); // Указываем, что ключи в Redis будут храниться как обычные строки (String)
+        template.setValueSerializer(RedisSerializer.json()); // Указываем использовать JSON-сериализатор для значений (автоматически переводит объекты в JSON)
+
+        return template;  // Возвращаем настроенный бин в контекст Spring
     }
 
     /**
@@ -39,12 +40,13 @@ public class RedisConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
 
-        // Вместо создания GenericJackson2JsonRedisSerializer вручную:
+        // Создаем базовую конфигурацию Redis-кэша с настройками "из коробки"
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
-                .disableCachingNullValues()
-                // Используем новый актуальный метод:
+                .entryTtl(Duration.ofMinutes(10)) // Устанавливаем "время жизни" кэша — 10 минут
+                .disableCachingNullValues() // Запрещаем сохранять в кэш null-значения (защита от пустого кэширования)
+                // Настраиваем правила сериализации значений
                 .serializeValuesWith(
+                        // Используем современный JSON-сериализатор вместо устаревших реализаций
                         RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json())
                 );
     }
@@ -55,15 +57,18 @@ public class RedisConfig {
     @Bean
     public org.springframework.cache.CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 
+        // Создаем специфическую конфигурацию с TTL 120 минут
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(120))
-                .disableCachingNullValues()
+                .entryTtl(Duration.ofMinutes(30)) // Время жизни — 30 минут
+                .disableCachingNullValues()  // Не кэшируем null
+                // Указываем JSON-формат для записи данных в Redis
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()));
 
+        // Собираем менеджер кэша, который управляет жизненным циклом всех кэшей в приложении
         return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
-                .withCacheConfiguration("employees", config) // здесь можно задать другой конфиг для конкретного кэша
-                .withCacheConfiguration("prices", config) // здесь можно задать другой конфиг для конкретного кэша
-                .build();
+                .cacheDefaults(config) // Устанавливаем настройки по умолчанию (если кэш не найден в списке ниже)
+                .withCacheConfiguration("employees", config) // Применяем настройки конкретно для кэша с именем "employees"
+                .withCacheConfiguration("prices", config) // Применяем настройки конкретно для кэша с именем "prices"
+                .build(); // билдим сборку
     }
 }

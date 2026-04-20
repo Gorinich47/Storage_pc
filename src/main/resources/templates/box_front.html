@@ -5,20 +5,28 @@
         <div class="row">
 
             <!-- Форма поиска -->
-            <form class="mb-4" method="get" th:action="@{/box}">
-                <div class="row g-3">
-                    <div class="col-md-3">
+            <form class="mb-4" method="get" th:action="@{/}">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <!-- Поле ввода -->
                         <input class="form-control"
-                               name="search"
-                               placeholder="Поиск по ID бокса"
-                               th:value="${#strings.isEmpty(param.search) ? '' : param.search}"
+                               name="searchAll"
+                               placeholder="Поиск по ID..."
+                               th:value="${#strings.isEmpty(param.searchAll) ? '' : param.searchAll}"
                                type="text"/>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-primary w-100" type="submit">Найти</button>
-                    </div>
-                    <div class="col-md-2">
-                        <a class="btn btn-secondary w-100" th:href="@{/box}">Сбросить</a>
+
+                        <!-- 1. Кнопка поиска ДОЛЖНА быть первой после input для корректного срабатывания Enter -->
+                        <button class="btn btn-primary" id="button-search" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+
+                        <!-- 2. Кнопка сброса идет следом -->
+                        <a class="btn btn-outline-secondary"
+                           id="button-reset"
+                           th:href="@{/}"
+                           th:if="${not #strings.isEmpty(param.searchAll)}">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
                     </div>
                 </div>
             </form>

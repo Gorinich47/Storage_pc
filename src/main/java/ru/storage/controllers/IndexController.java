@@ -52,13 +52,7 @@ public class IndexController {
         if (rentedBoxList == null) {
             rentedBoxList = new ArrayList<>();
         }
-
         Client selectedClient = (Client) session.getAttribute("selectedClient");
-//        if (selectedClient == null) {
-//            rentedBoxList = new ArrayList<>();
-//        }
-        //List<Box> rentedBoxList = List.of();
-
         Page<Box> boxPage = boxService.searchOrAll(page, size, searchAll);
 
         model.addAttribute("content", "box_front");
